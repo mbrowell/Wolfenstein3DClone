@@ -1,0 +1,10 @@
+-Engine generalization
+-Better scratchpad support
+-Improve texture class (reading, blitting, basic image processing
+-Some way to separate game and engine data
+-Add higher level rendering conrtructs (shaders, materials, meshs, transforms)
+-Add some form of automatic shader selection
+-Add some form of primitives (rectangles, spheres, cones, pyramids)
+-More flexible transform class
+-Non-perspective view (orthogonal view)
+-Rendering engine!

@@ -117,30 +117,57 @@ public class Shader {
     /**
      *
      * @param fileName
+     * @throws java.io.IOException
      */
     public void addVertexShaderFromFile(String fileName) {
         
-        addProgram(loadShader(fileName), GL_VERTEX_SHADER);
+        try {
+            
+            addProgram(loadShader(fileName), GL_VERTEX_SHADER);
+            
+        } catch (IOException ex) {
+            
+            Logger.getLogger(Shader.class.getName()).log(Level.SEVERE, null, ex);
+            
+        }
         
     }
     
     /**
      *
      * @param fileName
+     * @throws java.io.IOException
      */
     public void addGeometryShaderFromFile(String fileName) {
         
-        addProgram(loadShader(fileName), GL_GEOMETRY_SHADER);
+        try {
+            
+            addProgram(loadShader(fileName), GL_GEOMETRY_SHADER);
+            
+        } catch (IOException ex) {
+            
+            Logger.getLogger(Shader.class.getName()).log(Level.SEVERE, null, ex);
+            
+        }
         
     }
     
     /**
      *
      * @param fileName
+     * @throws java.io.IOException
      */
     public void addFragmentShaderFromFile(String fileName) {
         
-        addProgram(loadShader(fileName), GL_FRAGMENT_SHADER);
+        try {
+            
+            addProgram(loadShader(fileName), GL_FRAGMENT_SHADER);
+            
+        } catch (IOException ex) {
+            
+            Logger.getLogger(Shader.class.getName()).log(Level.SEVERE, null, ex);
+            
+        }
         
     }
     
@@ -225,32 +252,19 @@ public class Shader {
     }
     
     @SuppressWarnings("null")
-    private static String loadShader(String fileName) {
+    private static String loadShader(String fileName) throws FileNotFoundException, IOException {
         
         StringBuilder shaderSource = new StringBuilder();
-        BufferedReader shaderReader = null;
-        
-        try {
-            
-            shaderReader = new BufferedReader(new FileReader("./res/shaders/" + fileName));
-            
-        } catch (FileNotFoundException ex) {
-            
-            Logger.getLogger(Shader.class.getName()).log(Level.SEVERE, null, ex);
-            
-        }
-        
         String line;
         
-        try {
+        try (BufferedReader shaderReader = new BufferedReader(new FileReader("./res/shaders/" + fileName))) {
             
             while((line = shaderReader.readLine()) != null) {
                 
                 shaderSource.append(line).append("\n");
-                               
-            }
             
-        } catch (IOException ex) {
+            }
+        } catch (FileNotFoundException ex) {
             
             Logger.getLogger(Shader.class.getName()).log(Level.SEVERE, null, ex);
             

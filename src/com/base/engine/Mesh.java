@@ -52,7 +52,15 @@ public class Mesh {
         
         initMeshData();
         
-        loadMesh("fileName");
+        try {
+            
+            loadMesh("fileName");
+            
+        } catch (IOException ex) {
+            
+            Logger.getLogger(Mesh.class.getName()).log(Level.SEVERE, null, ex);
+            
+        }
         
     }
     
@@ -159,7 +167,7 @@ public class Mesh {
     }
     
     @SuppressWarnings("null")
-    private Mesh loadMesh(String fileName) {
+    private Mesh loadMesh(String fileName) throws IOException {
         
         String[] splitArray = fileName.split("\\.");
         String extension = splitArray[splitArray.length - 1];
@@ -175,23 +183,9 @@ public class Mesh {
         ArrayList<Vertex> vertices = new ArrayList<>();
         ArrayList<Integer> indices = new ArrayList<>();
         
-        @SuppressWarnings("UnusedAssignment")
-        BufferedReader meshReader = null;
-        
-        try {
-            
-            meshReader = new BufferedReader(new FileReader("./res/models/" + fileName));
-            
-        } catch (FileNotFoundException ex) {
-            
-            Logger.getLogger(Mesh.class.getName()).log(Level.SEVERE, null, ex);
-            System.exit(1);
-            
-        }
-        
         String line;
         
-        try {
+        try (BufferedReader meshReader = new BufferedReader(new FileReader("./res/models/" + fileName))) {
             
             while((line = meshReader.readLine()) != null) {
                 
@@ -223,11 +217,10 @@ public class Mesh {
                                
             }
             
-            meshReader.close();
-            
-        } catch (IOException ex) {
+        } catch (FileNotFoundException ex) {
             
             Logger.getLogger(Mesh.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
             
         }
             
