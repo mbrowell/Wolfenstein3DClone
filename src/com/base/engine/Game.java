@@ -28,12 +28,15 @@ public class Game extends Camera {
     private static final float SPOT_HEIGHT = 1;
     private static final float SPOT_DEPTH = 1;
     
+    private static final int NUM_TEXT_EXP = 4;
+    private static final int NUM_TEXTURES = (int)Math.pow(2, NUM_TEXT_EXP);
+    
     Bitmap m_level;
     Shader m_shader;
     Material m_material;
     Mesh m_mesh;
     Transform m_transform;
-    
+        
     /**
      *
      */
@@ -57,12 +60,16 @@ public class Game extends Camera {
                 
                 }
                 
-                float xHigher = 1;
-                float xLower = 0;
-                float yHigher = 1;
-                float yLower = 0;
-                
                 // Generate floor
+                int textX = ((m_level.getPixel(i, j) & 0x00FF00) >> 8) / NUM_TEXTURES;
+                int textY = textX % NUM_TEXT_EXP;
+                textX /= NUM_TEXT_EXP;
+                
+                float xHigher = 1 - ((float)textX / (float)NUM_TEXT_EXP);
+                float xLower = xHigher - (1 / (float)NUM_TEXT_EXP);
+                float yLower = 1 - ((float)textY / (float)NUM_TEXT_EXP);
+                float yHigher = yLower - (1 / (float)NUM_TEXT_EXP);
+                
                 indices.add(vertices.size() + 2);
                 indices.add(vertices.size() + 1);
                 indices.add(vertices.size() + 0);
@@ -75,7 +82,12 @@ public class Game extends Camera {
                 vertices.add(new Vertex(new Vector3f((i + 1) * SPOT_WIDTH, 0, (j + 1) * SPOT_DEPTH), new Vector2f(xHigher, yHigher)));
                 vertices.add(new Vertex(new Vector3f(i * SPOT_WIDTH, 0, (j + 1) * SPOT_DEPTH), new Vector2f(xLower, yHigher)));
                 
-                // Generate ceiling
+                // Generate ceiling                
+                xHigher = 1 - ((float)textX / (float)NUM_TEXT_EXP);
+                xLower = xHigher - (1 / (float)NUM_TEXT_EXP);
+                yLower = 1 - ((float)textY / (float)NUM_TEXT_EXP);
+                yHigher = yLower - (1 / (float)NUM_TEXT_EXP);
+                
                 indices.add(vertices.size() + 0);
                 indices.add(vertices.size() + 1);
                 indices.add(vertices.size() + 2);
@@ -89,6 +101,15 @@ public class Game extends Camera {
                 vertices.add(new Vertex(new Vector3f(i * SPOT_WIDTH, SPOT_HEIGHT, (j + 1) * SPOT_DEPTH), new Vector2f(xLower, yHigher)));
                 
                 // Generate walls
+                textX = ((m_level.getPixel(i, j) & 0xFF0000) >> 16) / NUM_TEXTURES;
+                textY = textX % NUM_TEXT_EXP;
+                textX /= NUM_TEXT_EXP;
+                
+                xHigher = 1 - ((float)textX / (float)NUM_TEXT_EXP);
+                xLower = xHigher - (1 / (float)NUM_TEXT_EXP);
+                yLower = 1 - ((float)textY / (float)NUM_TEXT_EXP);
+                yHigher = yLower - (1 / (float)NUM_TEXT_EXP);
+                
                 if ((m_level.getPixel(i, j - 1) & 0xFFFFFF) == 0) {
                     
                     indices.add(vertices.size() + 0);
@@ -113,10 +134,10 @@ public class Game extends Camera {
                     indices.add(vertices.size() + 2);
                     indices.add(vertices.size() + 0);
                     
-                    vertices.add(new Vertex(new Vector3f(i * SPOT_WIDTH, 0, (j + 1) * SPOT_DEPTH), new Vector2f(xLower, yLower)));
-                    vertices.add(new Vertex(new Vector3f((i + 1) * SPOT_WIDTH, 0, (j + 1) * SPOT_DEPTH), new Vector2f(xHigher, yLower)));
-                    vertices.add(new Vertex(new Vector3f((i + 1) * SPOT_WIDTH, SPOT_HEIGHT, (j + 1) * SPOT_DEPTH), new Vector2f(xHigher, yHigher)));
-                    vertices.add(new Vertex(new Vector3f(i * SPOT_WIDTH, SPOT_HEIGHT, (j + 1) * SPOT_DEPTH), new Vector2f(xLower, yHigher)));
+                    vertices.add(new Vertex(new Vector3f(i * SPOT_WIDTH, 0, (j + 1) * SPOT_DEPTH), new Vector2f(xLower+10, yLower+10)));
+                    vertices.add(new Vertex(new Vector3f((i + 1) * SPOT_WIDTH, 0, (j + 1) * SPOT_DEPTH), new Vector2f(xHigher+10, yLower+10)));
+                    vertices.add(new Vertex(new Vector3f((i + 1) * SPOT_WIDTH, SPOT_HEIGHT, (j + 1) * SPOT_DEPTH), new Vector2f(xHigher+10, yHigher+10)));
+                    vertices.add(new Vertex(new Vector3f(i * SPOT_WIDTH, SPOT_HEIGHT, (j + 1) * SPOT_DEPTH), new Vector2f(xLower+10, yHigher+10)));
                     
                 }
                 
@@ -170,7 +191,7 @@ public class Game extends Camera {
 //                                   0,2,3};
         
         m_shader = BasicShader.getM_instance();
-        m_material = new Material(new Texture("test.png"));
+        m_material = new Material(new Texture("WolfCollection.png"));
         m_mesh = new Mesh(vertexArray, Util.toIntArray(indexArray));
         m_transform = new Transform();
         Transform.setM_camera(this);

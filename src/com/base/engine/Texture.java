@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static org.lwjgl.opengl.GL11.GL_NEAREST;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.glBindTexture;
 import org.newdawn.slick.opengl.TextureLoader;
@@ -70,7 +71,7 @@ public class Texture {
         
         try {
             
-            int id = TextureLoader.getTexture(extension, new FileInputStream(new File("./res/textures/" + fileName))).getTextureID();
+            int id = TextureLoader.getTexture(extension, new FileInputStream(new File("./res/textures/" + fileName)), GL_NEAREST).getTextureID();
             
             return id;
             
