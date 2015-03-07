@@ -22,41 +22,60 @@ package com.base.engine;
  * @author Michael Browell <mbrowell1984@gmail.com>
  */
 public class Door {
-
+    
+    public static final float WIDTH = 1;
+    public static final float HEIGHT = 1;
+    public static final float DEPTH = 0.04f;
+    public static final float START = 0;
+    public static final double TIME_TO_OPEN = 1;
+    public static final double CLOSE_DELAY = 2;
+    
     private Shader m_shader;
     private static Mesh m_mesh;
     private final Material m_material;
     private final Transform m_transform;
+    
+    private final Vector3f m_openPosition;
+    private final Vector3f m_closePosition;
+    
+    private boolean m_isOpening;
+    private double m_openingStartTime;
+    private double m_openTime;
+    private double m_closingStartTime;
+    private double m_closeTime;
 
-    public Door(Transform transform, Material material) {
+    public Door(Transform transform, Material material, Vector3f openPosition) {
         
         this.m_transform = transform;
         this.m_material = material;
+        this.m_isOpening = false;
+        this.m_closePosition = m_transform.getM_translation().multiply(1);
+        this.m_openPosition = openPosition;
         
         if(m_mesh == null) {
             
             // NOTE: Make sure to draw top/bottom face if door height < level height.
             Vertex[] vertices = new Vertex[] {
                 
-                new Vertex(new Vector3f(0, 0, 0), new Vector2f(0.5f, 1)),
-                new Vertex(new Vector3f(0, 1, 0), new Vector2f(0.5f, 0.75f)),
-                new Vertex(new Vector3f(1, 1, 0), new Vector2f(0.75f, 0.75f)),
-                new Vertex(new Vector3f(1, 0, 0), new Vector2f(0.75f, 1)),
+                new Vertex(new Vector3f(START, START, START), new Vector2f(0.5f, 1)),
+                new Vertex(new Vector3f(START, HEIGHT, START), new Vector2f(0.5f, 0.75f)),
+                new Vertex(new Vector3f(WIDTH, HEIGHT, START), new Vector2f(0.75f, 0.75f)),
+                new Vertex(new Vector3f(WIDTH, START, START), new Vector2f(0.75f, 1)),
                  
-                new Vertex(new Vector3f(0, 0, 0), new Vector2f(0, 0)),
-                new Vertex(new Vector3f(0, 1, 0), new Vector2f(0, 0)),
-                new Vertex(new Vector3f(0, 1, 0.04f), new Vector2f(0, 0)),
-                new Vertex(new Vector3f(0, 0, 0.04f), new Vector2f(0, 0)),
+                new Vertex(new Vector3f(START, START, START), new Vector2f(0, 0)),
+                new Vertex(new Vector3f(START, HEIGHT, START), new Vector2f(0, 0)),
+                new Vertex(new Vector3f(START, HEIGHT, DEPTH), new Vector2f(0, 0)),
+                new Vertex(new Vector3f(START, START, DEPTH), new Vector2f(0, 0)),
                  
-                new Vertex(new Vector3f(0, 0, 0.04f), new Vector2f(0, 0.75f)),
-                new Vertex(new Vector3f(0, 1, 0.04f), new Vector2f(0, 0.5f)),
-                new Vertex(new Vector3f(1, 1, 0.04f), new Vector2f(0.25f, 0.5f)),
-                new Vertex(new Vector3f(1, 0, 0.04f), new Vector2f(0.25f, 0.75f)),
+                new Vertex(new Vector3f(START, START, DEPTH), new Vector2f(0, 0.75f)),
+                new Vertex(new Vector3f(START, HEIGHT, DEPTH), new Vector2f(0, 0.5f)),
+                new Vertex(new Vector3f(WIDTH, HEIGHT, DEPTH), new Vector2f(0.25f, 0.5f)),
+                new Vertex(new Vector3f(WIDTH, START, DEPTH), new Vector2f(0.25f, 0.75f)),
                 
-                new Vertex(new Vector3f(1, 0, 0), new Vector2f(0, 0)),
-                new Vertex(new Vector3f(1, 1, 0), new Vector2f(0, 0)),
-                new Vertex(new Vector3f(1, 1, 0.04f), new Vector2f(0, 0)),
-                new Vertex(new Vector3f(1, 0, 0.04f), new Vector2f(0, 0))
+                new Vertex(new Vector3f(WIDTH, START, START), new Vector2f(0, 0)),
+                new Vertex(new Vector3f(WIDTH, HEIGHT, START), new Vector2f(0, 0)),
+                new Vertex(new Vector3f(WIDTH, HEIGHT, DEPTH), new Vector2f(0, 0)),
+                new Vertex(new Vector3f(WIDTH, START, DEPTH), new Vector2f(0, 0))
                 
                 };
             
@@ -82,9 +101,58 @@ public class Door {
         
     }
     
+    public void open() {
+        
+        if(m_isOpening) {
+            
+            return;
+            
+        }
+        
+        m_openingStartTime = (double)Time.getTime()/(double)Time.SECOND;
+        m_openTime = m_openingStartTime + TIME_TO_OPEN;
+        
+        m_closingStartTime = m_openTime + CLOSE_DELAY;
+        m_closeTime = m_closingStartTime + TIME_TO_OPEN;
+        
+        m_isOpening = true;
+        
+    }
+    
+    private Vector3f vectorLerp(Vector3f startPos, Vector3f endPos, float lerpFactor) {
+        
+        return startPos.add(endPos.subtract(startPos).multiply(lerpFactor));
+        
+    }
+    
     public void update() {
         
-        
+        if(m_isOpening) {
+            
+            double time = (double)Time.getTime() / Time.SECOND;
+            
+            if(time < m_openTime) {
+                
+                getM_transform().setM_translation(vectorLerp(m_closePosition, m_openPosition,
+                        (float)((time - m_openingStartTime) / TIME_TO_OPEN)));
+                
+            } else if(time < m_closingStartTime) {
+            
+                getM_transform().setM_translation(m_openPosition);
+            
+            } else if(time < m_closeTime) {
+                
+                getM_transform().setM_translation(vectorLerp(m_openPosition, m_closePosition,
+                        (float)((time - m_closingStartTime) / TIME_TO_OPEN)));
+                
+            } else {
+                
+                getM_transform().setM_translation(m_closePosition);
+                m_isOpening = false;
+                
+            }
+            
+        }
         
     }
     
@@ -96,6 +164,20 @@ public class Door {
         // TODO: Bind/update shader
         
         m_mesh.draw();
+        
+    }
+    
+    public Vector2f getDoorSize() {
+        
+        if(getM_transform().getM_rotation().getY() == 90) {
+            
+            return new Vector2f(Door.DEPTH, Door.WIDTH);
+            
+        } else {
+            
+            return new Vector2f(Door.WIDTH, Door.DEPTH);
+            
+        }
         
     }
 

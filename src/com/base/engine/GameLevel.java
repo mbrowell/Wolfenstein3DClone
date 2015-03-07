@@ -34,16 +34,20 @@ public class GameLevel {
     
     private static final int NUM_TEXT_EXP = 4;
     private static final int NUM_TEXTURES = (int)Math.pow(2, NUM_TEXT_EXP);
+    private static final float OPEN_DISTANCE = 1;
     
     private static Bitmap m_level;
     private static Shader m_shader;
     private static Material m_material;
     private static Mesh m_mesh;
     private static Transform m_transform;
+    private final Player m_player;
     
     private final ArrayList<Door> m_doors;
+    private boolean m_xDoor;
+    private boolean m_yDoor;
     
-    public GameLevel(String levelName, String textureName) {
+    public GameLevel(String levelName, String textureName, Player player) {
         
         m_level = new Bitmap(levelName).reflectOnX();
         
@@ -56,11 +60,27 @@ public class GameLevel {
         
         m_transform = new Transform();
         
+        this.m_player = player;
+        
     }
     
     public void input() {
         
+        if(Input.getKeyDown(Input.KEY_E)) {
+            
+            for(Door door : m_doors) {
+                
+                if(door.getM_transform().getM_translation().subtract(m_player.getM_camera().getM_pos()).length() < OPEN_DISTANCE) {
+                    
+                    door.open();
+                    
+                }
+                
+            }
+            
+        }
         
+        m_player.input();
         
     }
     
@@ -71,6 +91,7 @@ public class GameLevel {
             door.update();
             
         }
+        m_player.update();
         
     }
     
@@ -84,6 +105,7 @@ public class GameLevel {
             door.render();
             
         }
+        m_player.render();
         
     }
 
@@ -106,7 +128,14 @@ public class GameLevel {
                     
                 }
                 
-                //collisionVector = collisionVector.multiply(rectCollide(oldPos, newPos, PLAYER_DIMENSIONS, doorPos, doorSize));
+                for(Door door: m_doors) {
+                    
+                    Vector2f doorPos = new Vector2f(door.getM_transform().getM_translation().getX(), door.getM_transform().getM_translation().getZ());
+                    
+                    Vector2f doorSize = door.getDoorSize();
+                    collisionVector = collisionVector.multiply(rectCollide(oldPos, newPos, PLAYER_DIMENSIONS, doorPos, doorSize));
+                    
+                }
                 
             }
             
@@ -228,20 +257,24 @@ public class GameLevel {
             
         }
         
+        Vector3f openPosition = null;
+        
         if(xDoor) {
             
             doorTransform.setM_translation(new Vector3f(x + (SPOT_WIDTH / 2), 0, y));
             doorTransform.setM_rotation(0, 90, 0);
+            openPosition = doorTransform.getM_translation().subtract(new Vector3f(0, 0, 0.9f));
             
         }
         if(yDoor) {
             
             doorTransform.setM_translation(new Vector3f(x, 0, y + (SPOT_DEPTH / 2)));
             doorTransform.setM_rotation(0, 0, 0);
+            openPosition = doorTransform.getM_translation().subtract(new Vector3f(0.9f, 0, 0));
             
         }
         
-        m_doors.add(new Door(doorTransform, m_material));
+        m_doors.add(new Door(doorTransform, m_material, openPosition));
         
     }
     
