@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  *
  * @author Michael Browell <mbrowell1984@gmail.com>
  */
-public class MainComponent extends Game {
+public class MainComponent {
     
     /**
      *
@@ -46,6 +46,7 @@ public class MainComponent extends Game {
     public static final double FRAME_CAP = 5000.0;
     
     private boolean m_isRunning;
+    private final Game m_game;
     
     /**
      *
@@ -57,6 +58,8 @@ public class MainComponent extends Game {
         System.out.println(RenderUtil.getOpenGLVersion());
         RenderUtil.initGraphics();
         m_isRunning = false;
+        
+        m_game = new Game();
         
     }
     
@@ -136,10 +139,8 @@ public class MainComponent extends Game {
                 
                 Time.setM_delta((float)frameTime);
                 
-                input();
-                
-                
-                updateGame();
+                m_game.input();
+                Input.update();
                 
                 if(frameCounter >= Time.SECOND) {
                 
@@ -180,7 +181,7 @@ public class MainComponent extends Game {
     private void doRender() {
         
         RenderUtil.clearScreen();
-        super.render();
+        m_game.render();
         Window.render();
         
     }

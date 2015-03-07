@@ -681,28 +681,28 @@ public class Input
      *
      */
     public static final int KEY_SLEEP           = 0xDF;
-	
-	private static final boolean[] m_lastKeys = new boolean[NUM_KEYCODES];
-	private static final boolean[] m_lastMouse = new boolean[NUM_MOUSEBUTTONS];
-	
+    
+    private static final boolean[] m_lastKeys = new boolean[NUM_KEYCODES];
+    private static final boolean[] m_lastMouse = new boolean[NUM_MOUSEBUTTONS];
+    
     /**
      *
      */
     public static void update() {
             
-		for(int i = 0; i < NUM_KEYCODES; i++) {
-                    
-			m_lastKeys[i] = getKey(i);
-                        
-                }
-		
-		for(int i = 0; i < NUM_MOUSEBUTTONS; i++) {
-                    
-			m_lastMouse[i] = getMouse(i);
-                        
-                }
+        for(int i = 0; i < NUM_KEYCODES; i++) {
+
+            m_lastKeys[i] = getKey(i);
+
+        }
+        
+        for(int i = 0; i < NUM_MOUSEBUTTONS; i++) {
+            
+            m_lastMouse[i] = getMouse(i);
+            
+        }
                 
-	}
+    }
 	
     /**
      *
@@ -710,21 +710,21 @@ public class Input
      * @return
      */
     public static boolean getKey(int keyCode) {
-            
-		return Keyboard.isKeyDown(keyCode);
-                
-	}
-	
+        
+        return Keyboard.isKeyDown(keyCode);
+        
+    }
+    
     /**
      *
      * @param keyCode
      * @return
      */
     public static boolean getKeyDown(int keyCode) {
-            
-		return getKey(keyCode) && !m_lastKeys[keyCode];
-                
-	}
+
+        return getKey(keyCode) && !m_lastKeys[keyCode];
+
+    }
 	
     /**
      *
@@ -732,10 +732,10 @@ public class Input
      * @return
      */
     public static boolean getKeyUp(int keyCode) {
-            
-		return !getKey(keyCode) && m_lastKeys[keyCode];
-                
-	}
+    
+        return !getKey(keyCode) && m_lastKeys[keyCode];
+        
+    }
 	
     /**
      *
@@ -743,10 +743,10 @@ public class Input
      * @return
      */
     public static boolean getMouse(int mouseButton) {
-            
-		return Mouse.isButtonDown(mouseButton);
-                
-	}
+    
+        return Mouse.isButtonDown(mouseButton);
+        
+    }
 	
     /**
      *
@@ -754,9 +754,10 @@ public class Input
      * @return
      */
     public static boolean getMouseDown(int mouseButton) {
-            
-		return getMouse(mouseButton) && !m_lastMouse[mouseButton];
-	}
+    
+        return getMouse(mouseButton) && !m_lastMouse[mouseButton];
+
+    }
 	
     /**
      *
@@ -764,38 +765,39 @@ public class Input
      * @return
      */
     public static boolean getMouseUp(int mouseButton) {
-            
-		return !getMouse(mouseButton) && m_lastMouse[mouseButton];
-                
-	}
+
+        return !getMouse(mouseButton) && m_lastMouse[mouseButton];
+
+    }
 	
     /**
      *
      * @return
      */
     public static Vector2f getMousePosition() {
-            
-		return new Vector2f(Mouse.getX(), Mouse.getY());
-                
-	}
+
+        return new Vector2f(Mouse.getX(), Mouse.getY());
+
+    }
 	
     /**
      *
      * @param pos
      */
     public static void setMousePosition(Vector2f pos) {
-            
-		Mouse.setCursorPosition((int)pos.getX(), (int)pos.getY());
-                
-	}
+
+        Mouse.setCursorPosition((int)pos.getX(), (int)pos.getY());
+
+    }
 	
     /**
      *
      * @param enabled
      */
     public static void setCursor(boolean enabled) {
-            
-		Mouse.setGrabbed(!enabled);
-                
-	}
+
+        Mouse.setGrabbed(!enabled);
+
+    }
+    
 }

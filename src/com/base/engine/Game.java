@@ -20,9 +20,10 @@ package com.base.engine;
  *
  * @author Michael Browell <mbrowell1984@gmail.com>
  */
-public class Game extends Camera {
+public class Game {
     
     private static GameLevel m_level;
+    private static Player m_player;
         
     /**
      *
@@ -30,21 +31,29 @@ public class Game extends Camera {
     @SuppressWarnings("LeakingThisInConstructor")
     public Game() {
         
-        super();
-        
         m_level = new GameLevel("level1.png", "WolfCollection.png");
         
-        Transform.setM_camera(this);
+        m_player = new Player(new Vector3f(0, 0.4375f, 0));
+        
+        Transform.setM_camera(m_player.getM_camera());
         Transform.setProjection(70, Window.getWidth(), Window.getHeight(), .01f, 1000);
             
+    }
+    
+    public void input() {
+        
+        m_level.input();
+        m_player.input();
+        
     }
     
     /**
      *
      */
-    public void updateGame() {
+    public void update() {
         
-        Transform.getM_camera().input();
+        m_level.update();
+        m_player.update();
         
     }
     
@@ -54,6 +63,7 @@ public class Game extends Camera {
     public void render() {
         
         m_level.render();
+        m_player.render();
         
     }
     
