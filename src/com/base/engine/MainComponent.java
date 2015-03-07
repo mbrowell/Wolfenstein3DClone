@@ -140,7 +140,7 @@ public class MainComponent {
                 Time.setM_delta((float)frameTime);
                 
                 m_game.input();
-                Input.update();
+                m_game.update();
                 
                 if(frameCounter >= Time.SECOND) {
                 

@@ -24,15 +24,17 @@ package com.base.engine;
 public class Player {
     
     private static final Vector2f CENTRE_POSITION = new Vector2f(Window.getWidth() / 2, Window.getHeight() / 2);
-    private static final float MOUSE_SENSITIVITY = 0.04f;
-    private static final float MOVE_SPEED = 10;
+    private static final float MOUSE_SENSITIVITY = 0.2f;
+    private static final float MOVE_SPEED = 7;
+    private static final float PLAYER_SIZE = 0.2f;
+    private static final Vector2f PLAYER_DIMENSIONS = new Vector2f(PLAYER_SIZE, PLAYER_SIZE);
     private static final Vector3f ZERO_VECTOR = new Vector3f(0, 0, 0);
     
     private final Camera m_camera;
     
-    boolean m_mouseLocked = false;
+    private boolean m_mouseLocked = false;
     
-    Vector3f m_movementVector;
+    private Vector3f m_movementVector;
     
     public Player(Vector3f position) {
         
@@ -42,7 +44,7 @@ public class Player {
     
     public void input(){
         
-        float moveAmt = (float)(MOVE_SPEED * Time.getM_delta());
+        
         
         if(Input.getKey(Input.KEY_ESCAPE)) {
             
@@ -80,14 +82,6 @@ public class Player {
             
         }
         
-        m_movementVector.setY(0);
-        if(m_movementVector.length() > 0) {
-            
-            m_movementVector = m_movementVector.normalized();
-            
-        }
-        m_camera.move(m_movementVector, moveAmt);
-        
         if(m_mouseLocked) {
             
             Vector2f deltaPos = Input.getMousePosition().subtract(CENTRE_POSITION);
@@ -118,7 +112,22 @@ public class Player {
     
     public void update() {
         
+        float moveAmt = (float)(MOVE_SPEED * Time.getM_delta());
         
+        m_movementVector.setY(0);
+        if(m_movementVector.length() > 0) {
+            
+            m_movementVector = m_movementVector.normalized();
+            
+        }
+        
+        Vector3f oldPos = m_camera.getM_pos();
+        Vector3f newPos = oldPos.add(m_movementVector.multiply(moveAmt));
+        
+        Vector3f collisionVector = Game.getM_level().checkCollision(oldPos, newPos, PLAYER_DIMENSIONS);
+        m_movementVector = m_movementVector.multiply(collisionVector);
+        
+        m_camera.move(m_movementVector, moveAmt);
         
     }
     

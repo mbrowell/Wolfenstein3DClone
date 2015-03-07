@@ -30,6 +30,7 @@ public class GameLevel {
     private static final float SPOT_WIDTH = 1;
     private static final float SPOT_HEIGHT = 1;
     private static final float SPOT_DEPTH = 1;
+    private static final Vector2f BLOCK_SIZE = new Vector2f(SPOT_WIDTH, SPOT_DEPTH);
     
     private static final int NUM_TEXT_EXP = 4;
     private static final int NUM_TEXTURES = (int)Math.pow(2, NUM_TEXT_EXP);
@@ -70,6 +71,58 @@ public class GameLevel {
         m_shader.bind();
         m_shader.updateUniforms(m_transform.getTransformation(), m_transform.getProjectedTransformation(), m_material);
         m_mesh.draw();
+        
+    }
+
+    public Vector3f checkCollision(Vector3f oldPos, Vector3f newPos, Vector2f PLAYER_DIMENSIONS) {
+        
+        Vector2f collisionVector = new Vector2f(1, 1);
+        Vector3f movementVector = newPos.subtract(oldPos);
+        
+        if(movementVector.length() > 0) {
+            
+            for(int i = 0; i < m_level.getM_width(); i++) {
+                
+                for(int j = 0; j < m_level.getM_height(); j++) {
+                    
+                    if((m_level.getPixel(i, j) & 0xFFFFFF) == 0) {
+                        
+                        collisionVector = collisionVector.multiply(rectCollide(oldPos, newPos, PLAYER_DIMENSIONS, BLOCK_SIZE.multiply(new Vector2f(i, j)), BLOCK_SIZE));
+                        
+                    }
+                    
+                }
+                
+            }
+            
+        }
+        
+        return new Vector3f(collisionVector.getX(), 0, collisionVector.getY());
+        
+    }
+    
+    private Vector2f rectCollide(Vector3f oldPos, Vector3f newPos, Vector2f playerSize, Vector2f objPos, Vector2f objSize) {
+        
+        Vector2f result = new Vector2f(0, 0);
+        
+        if(newPos.getX() + playerSize.getX() < objPos.getX() ||
+           newPos.getX() - playerSize.getX() > objPos.getX() + objSize.getX() * objSize.getX() ||
+           oldPos.getZ() + playerSize.getY() < objPos.getY() ||
+           oldPos.getZ() - playerSize.getY() > objPos.getY() + objSize.getY() * objSize.getY()) {
+            
+            result.setX(1);
+            
+        }
+        if(oldPos.getX() + playerSize.getX() < objPos.getX() ||
+           oldPos.getX() - playerSize.getX() > objPos.getX() + objSize.getX() * objSize.getX() ||
+           newPos.getZ() + playerSize.getY() < objPos.getY() ||
+           newPos.getZ() - playerSize.getY() > objPos.getY() + objSize.getY() * objSize.getY()) {
+            
+            result.setY(1);
+            
+        }
+        
+        return result;
         
     }
     
@@ -211,5 +264,5 @@ public class GameLevel {
         m_mesh = new Mesh(vertexArray, Util.toIntArray(indexArray));
         
     }
-
+    
 }

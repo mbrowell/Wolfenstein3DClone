@@ -33,7 +33,7 @@ public class Game {
         
         m_level = new GameLevel("level1.png", "WolfCollection.png");
         
-        m_player = new Player(new Vector3f(0, 0.4375f, 0));
+        m_player = new Player(new Vector3f(10, 0.4375f, 20));
         
         Transform.setM_camera(m_player.getM_camera());
         Transform.setProjection(70, Window.getWidth(), Window.getHeight(), .01f, 1000);
@@ -64,6 +64,12 @@ public class Game {
         
         m_level.render();
         m_player.render();
+        
+    }
+
+    public static GameLevel getM_level() {
+        
+        return m_level;
         
     }
     
