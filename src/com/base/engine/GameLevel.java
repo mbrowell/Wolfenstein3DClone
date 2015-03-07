@@ -41,12 +41,16 @@ public class GameLevel {
     private static Mesh m_mesh;
     private static Transform m_transform;
     
+    private final ArrayList<Door> m_doors;
+    
     public GameLevel(String levelName, String textureName) {
         
         m_level = new Bitmap(levelName).reflectOnX();
         
         m_shader = BasicShader.getM_instance();
         m_material = new Material(new Texture(textureName));
+        
+        m_doors = new ArrayList<>();
         
         generateLevel();
         
@@ -62,7 +66,11 @@ public class GameLevel {
     
     public void update() {
         
-        
+        for(Door door : m_doors) {
+            
+            door.update();
+            
+        }
         
     }
     
@@ -71,6 +79,11 @@ public class GameLevel {
         m_shader.bind();
         m_shader.updateUniforms(m_transform.getTransformation(), m_transform.getProjectedTransformation(), m_material);
         m_mesh.draw();
+        for(Door door : m_doors) {
+            
+            door.render();
+            
+        }
         
     }
 
@@ -92,6 +105,8 @@ public class GameLevel {
                     }
                     
                 }
+                
+                //collisionVector = collisionVector.multiply(rectCollide(oldPos, newPos, PLAYER_DIMENSIONS, doorPos, doorSize));
                 
             }
             
@@ -198,6 +213,48 @@ public class GameLevel {
         
     }
     
+    private void addDoor(int x, int y) {
+        
+        Transform doorTransform = new Transform();
+        
+        boolean xDoor = (m_level.getPixel(x, y - 1) & 0xFFFFFF) == 0 && (m_level.getPixel(x, y + 1) & 0xFFFFFF) == 0;
+        boolean yDoor = (m_level.getPixel(x - 1, y) & 0xFFFFFF) == 0 && (m_level.getPixel(x + 1, y) & 0xFFFFFF) == 0;
+        
+        if(!xDoor ^ yDoor) {
+            
+            System.err.println("Level generation failed! You placed a door in an invalid location: " + x + ", " + y);
+            Logger.getLogger(GameLevel.class.getName()).log(Level.SEVERE, null, new Exception());
+            System.exit(1);
+            
+        }
+        
+        if(xDoor) {
+            
+            doorTransform.setM_translation(new Vector3f(x + (SPOT_WIDTH / 2), 0, y));
+            doorTransform.setM_rotation(0, 90, 0);
+            
+        }
+        if(yDoor) {
+            
+            doorTransform.setM_translation(new Vector3f(x, 0, y + (SPOT_DEPTH / 2)));
+            doorTransform.setM_rotation(0, 0, 0);
+            
+        }
+        
+        m_doors.add(new Door(doorTransform, m_material));
+        
+    }
+    
+    private void addSpecial(int blueValue, int x, int y) {
+        
+        if(blueValue == 16) {
+            
+            addDoor(x, y);
+            
+        }
+        
+    }
+    
     private void generateLevel() {
         
         ArrayList<Vertex> vertices = new ArrayList<>();
@@ -214,6 +271,8 @@ public class GameLevel {
                 }
                 
                 float[] textCoords = calcTextCoords((m_level.getPixel(i, j) & 0x00FF00) >> 8);
+                
+                addSpecial((m_level.getPixel(i, j) & 0x0000FF), i, j);
                 
                 // Generate floor
                 addFace(indices, vertices.size(), true);

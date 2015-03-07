@@ -66,6 +66,7 @@ public class Shader {
         if(m_program == 0) {
             
             System.err.println("Shader creation failed: Could not find valid memory location in constructor");
+            Logger.getLogger(Shader.class.getName()).log(Level.SEVERE, null, new Exception());
             System.exit(1);
             
         }
@@ -233,6 +234,7 @@ public class Shader {
         if(shader == 0) {
             
             System.err.println("Shader creation failed: Could not find valid memory location when adding shader");
+            Logger.getLogger(Shader.class.getName()).log(Level.SEVERE, null, new Exception());
             System.exit(1);
             
         }

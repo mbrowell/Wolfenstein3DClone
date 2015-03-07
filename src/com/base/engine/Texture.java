@@ -17,15 +17,29 @@
 
 package com.base.engine;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.GL11.GL_NEAREST;
+import static org.lwjgl.opengl.GL11.GL_REPEAT;
+import static org.lwjgl.opengl.GL11.GL_RGBA;
+import static org.lwjgl.opengl.GL11.GL_RGBA8;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_S;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_T;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 import static org.lwjgl.opengl.GL11.glBindTexture;
-import org.newdawn.slick.opengl.TextureLoader;
+import static org.lwjgl.opengl.GL11.glGenTextures;
+import static org.lwjgl.opengl.GL11.glTexImage2D;
+import static org.lwjgl.opengl.GL11.glTexParameterf;
+import static org.lwjgl.opengl.GL11.glTexParameteri;
 
 /**
  *
@@ -71,9 +85,51 @@ public class Texture {
         
         try {
             
-            int id = TextureLoader.getTexture(extension, new FileInputStream(new File("./res/textures/" + fileName)), GL_NEAREST).getTextureID();
+            BufferedImage image = ImageIO.read(new File("./res/textures/" + fileName));
+                        
+            int[] pixels = image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
             
-            return id;
+            ByteBuffer buffer = BufferUtils.createByteBuffer(image.getWidth() * image.getHeight() * 4);
+            
+            for(int y = 0; y < image.getHeight(); y++) {
+                
+                for(int x = 0; x < image.getWidth(); x++) {
+                    
+                    int pixel = pixels[(y * image.getWidth()) + x];
+                    
+                    buffer.put((byte) ((pixel >> 16) & 0xFF));
+                    buffer.put((byte) ((pixel >> 8) & 0xFF));
+                    buffer.put((byte) ((pixel) & 0xFF));
+                    
+                    if(image.getColorModel().hasAlpha()) {
+                        
+                        buffer.put((byte) ((pixel >> 24) & 0xFF));
+                        
+                    } else {
+                        
+                        buffer.put((byte) (0xFF));
+                        
+                    }
+                    
+                }
+                
+                
+            }
+            
+            buffer.flip();
+            
+            int texture = glGenTextures();
+            glBindTexture(GL_TEXTURE_2D, texture);
+            
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.getWidth(), image.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+            
+            return texture;
             
         } catch (IOException ex) {
             
