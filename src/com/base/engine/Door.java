@@ -30,7 +30,6 @@ public class Door {
     public static final double TIME_TO_OPEN = 1;
     public static final double CLOSE_DELAY = 2;
     
-    private Shader m_shader;
     private static Mesh m_mesh;
     private final Material m_material;
     private final Transform m_transform;
@@ -158,8 +157,8 @@ public class Door {
     
     public void render() {
         
-        m_shader = BasicShader.getM_instance();
-        m_shader.updateUniforms(m_transform.getTransformation(), m_transform.getProjectedTransformation(), m_material);
+        Shader shader = GameLevel.getM_shader();
+        shader.updateUniforms(m_transform.getTransformation(), m_transform.getProjectedTransformation(), m_material);
         
         // TODO: Bind/update shader
         

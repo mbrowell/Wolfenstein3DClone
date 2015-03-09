@@ -86,9 +86,11 @@ public class Texture {
         try {
             
             BufferedImage image = ImageIO.read(new File("./res/textures/" + fileName));
+            
+            boolean hasAlpha = image.getColorModel().hasAlpha();
                         
             int[] pixels = image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
-            
+           
             ByteBuffer buffer = BufferUtils.createByteBuffer(image.getWidth() * image.getHeight() * 4);
             
             for(int y = 0; y < image.getHeight(); y++) {
@@ -101,7 +103,7 @@ public class Texture {
                     buffer.put((byte) ((pixel >> 8) & 0xFF));
                     buffer.put((byte) ((pixel) & 0xFF));
                     
-                    if(image.getColorModel().hasAlpha()) {
+                    if(hasAlpha) {
                         
                         buffer.put((byte) ((pixel >> 24) & 0xFF));
                         
@@ -136,7 +138,7 @@ public class Texture {
             Logger.getLogger(Texture.class.getName()).log(Level.SEVERE, null, ex);
             
         }
-        
+ 
         return 0;
         
     }

@@ -41,11 +41,11 @@ public class GameLevel {
     private static Material m_material;
     private static Mesh m_mesh;
     private static Transform m_transform;
+    
     private final Player m_player;
+    private final Enemy enemy;
     
     private final ArrayList<Door> m_doors;
-    private boolean m_xDoor;
-    private boolean m_yDoor;
     
     public GameLevel(String levelName, String textureName, Player player) {
         
@@ -61,6 +61,11 @@ public class GameLevel {
         m_transform = new Transform();
         
         this.m_player = player;
+        
+        Transform tempTransform = new Transform();
+        tempTransform.setM_translation(new Vector3f(8, 0, 8));
+        
+        enemy = new Enemy(tempTransform);
         
     }
     
@@ -92,6 +97,7 @@ public class GameLevel {
             
         }
         m_player.update();
+        enemy.update();
         
     }
     
@@ -106,6 +112,7 @@ public class GameLevel {
             
         }
         m_player.render();
+        enemy.render();
         
     }
 
@@ -354,6 +361,12 @@ public class GameLevel {
         indices.toArray(indexArray);
         
         m_mesh = new Mesh(vertexArray, Util.toIntArray(indexArray));
+        
+    }
+
+    public static Shader getM_shader() {
+        
+        return m_shader;
         
     }
     
