@@ -69,19 +69,25 @@ public class GameLevel {
         
     }
     
-    public void input() {
+    public void openDoors(Vector3f position) {
         
-        if(Input.getKeyDown(Input.KEY_E)) {
-            
-            for(Door door : m_doors) {
+        for(Door door : m_doors) {
                 
-                if(door.getM_transform().getM_translation().subtract(m_player.getM_camera().getM_pos()).length() < OPEN_DISTANCE) {
+                if(door.getM_transform().getM_translation().subtract(position).length() < OPEN_DISTANCE) {
                     
                     door.open();
                     
                 }
                 
             }
+        
+    }
+    
+    public void input() {
+        
+        if(Input.getKeyDown(Input.KEY_E)) {
+            
+            openDoors(m_player.getM_camera().getM_pos());
             
         }
         

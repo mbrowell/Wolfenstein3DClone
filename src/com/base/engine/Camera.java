@@ -26,7 +26,7 @@ public class Camera {
     /**
      *
      */
-    public static Vector3f m_yAxis = new Vector3f(0 , 1, 0);
+    public static Vector3f m_yAxis = new Vector3f(0, 1, 0);
     
     private Vector3f m_pos;
     private Vector3f m_forward;
@@ -49,12 +49,9 @@ public class Camera {
      */
     public Camera(Vector3f pos, Vector3f forward, Vector3f up) {
         
-        super();
-        
         this.m_pos = pos;
-        
-        this.m_up = up.normalized();
         this.m_forward = forward.normalized();
+        this.m_up = up.normalized();
         
     }
     

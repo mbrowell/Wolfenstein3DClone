@@ -100,7 +100,7 @@ public class Matrix4f {
         
         forward = forward.normalized();
         
-        Vector3f right = up;
+        Vector3f right = up.normalized();
         right = right.normalized();
         right = right.cross(forward);
         

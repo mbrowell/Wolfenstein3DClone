@@ -30,7 +30,7 @@ public class Game {
     @SuppressWarnings("LeakingThisInConstructor")
     public Game() {
         
-        Player player = new Player(new Vector3f(10, 0.7f, 20));
+        Player player = new Player(new Vector3f(10, 0.4275f, 20));
         
         m_level = new GameLevel("level1.png", "WolfCollection.png", player);
         

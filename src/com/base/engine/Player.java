@@ -38,7 +38,7 @@ public class Player {
     
     public Player(Vector3f position) {
         
-         m_camera = new Camera(position, new Vector3f(0, 0, 1), new Vector3f(0, 1, 0));
+         m_camera = new Camera(position, new Vector3f(0, 0, -1), new Vector3f(0, 1, 0));
         
     }
     
