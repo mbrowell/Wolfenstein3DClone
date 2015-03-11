@@ -47,6 +47,9 @@ public class GameLevel {
     
     private final ArrayList<Door> m_doors;
     
+    private ArrayList<Vector2f> collisionPosStart;
+    private ArrayList<Vector2f> collisionPosEnd;
+    
     public GameLevel(String levelName, String textureName, Player player) {
         
         m_level = new Bitmap(levelName).reflectOnX();
@@ -55,6 +58,9 @@ public class GameLevel {
         m_material = new Material(new Texture(textureName));
         
         m_doors = new ArrayList<>();
+        
+        collisionPosStart = new ArrayList<>();
+        collisionPosEnd = new ArrayList<>();
         
         generateLevel();
         
@@ -180,6 +186,56 @@ public class GameLevel {
         }
         
         return result;
+        
+    }
+    
+    public Vector2f checkIntersections(Vector2f lineStart, Vector2f lineEnd) {
+        
+        Vector2f nearestIntersection = null;
+        
+        for (int i = 0; i < collisionPosStart.size(); i++) {
+            
+            Vector2f collisionVector = lineIntersect(lineStart, lineEnd, collisionPosStart.get(i), collisionPosEnd.get(i));
+            
+            if(collisionVector != null && (nearestIntersection == null ||
+                    nearestIntersection.subtract(lineStart).length() >  collisionVector.subtract(lineStart).length())) {
+                
+                nearestIntersection = collisionVector;
+                
+            }
+            
+        }
+        
+        return nearestIntersection;
+        
+    }
+    
+    private Vector2f lineIntersect(Vector2f lineStart1, Vector2f lineEnd1,
+            Vector2f lineStart2, Vector2f lineEnd2) {
+                
+        Vector2f line1 = lineEnd1.subtract(lineStart1);
+        Vector2f line2 = lineEnd2.subtract(lineStart2);
+
+        float cross = line1.cross(line2);
+
+        if(cross == 0) {
+
+            return null;
+            
+        }
+        
+        Vector2f distanceBetweenLineStarts = lineStart2.subtract(lineStart1);
+
+        float a = distanceBetweenLineStarts.cross(line2) / cross;
+        float b = distanceBetweenLineStarts.cross(line1) / cross;
+        
+        if(0 < a && a < 1 && 0 < b && b < 1) {
+            
+            return lineStart1.add(line1.multiply(a));
+            
+        }
+        
+        return null;
         
     }
     
@@ -333,24 +389,32 @@ public class GameLevel {
                 
                 if((m_level.getPixel(i,j - 1) & 0xFFFFFF) == 0) {
                     
+                    collisionPosStart.add(new Vector2f(i * SPOT_WIDTH, j * SPOT_DEPTH));
+                    collisionPosEnd.add(new Vector2f((i + 1) * SPOT_WIDTH, j * SPOT_DEPTH));
                     addFace(indices, vertices.size(), false);
                     addVertices(vertices, i, 0, j, true, true, false, textCoords);
                 
                 }
                 if((m_level.getPixel(i,j + 1) & 0xFFFFFF) == 0) {
                     
+                    collisionPosStart.add(new Vector2f(i * SPOT_WIDTH, (j + 1) * SPOT_DEPTH));
+                    collisionPosEnd.add(new Vector2f((i + 1) * SPOT_WIDTH, (j + 1) * SPOT_DEPTH));
                     addFace(indices, vertices.size(), true);
                     addVertices(vertices, i, 0, (j + 1), true, true, false, textCoords);
                     
                 }
                 if((m_level.getPixel(i - 1,j) & 0xFFFFFF) == 0) {
                     
+                    collisionPosStart.add(new Vector2f(i * SPOT_WIDTH, j * SPOT_DEPTH));
+                    collisionPosEnd.add(new Vector2f(i * SPOT_WIDTH, (j + 1) * SPOT_DEPTH));
                     addFace(indices, vertices.size(), true);
                     addVertices(vertices, 0, j, i, false, true, true, textCoords);
                 
                 }
                 if((m_level.getPixel(i + 1,j) & 0xFFFFFF) == 0) {
                     
+                    collisionPosStart.add(new Vector2f((i + 1) * SPOT_WIDTH, j * SPOT_DEPTH));
+                    collisionPosEnd.add(new Vector2f((i + 1) * SPOT_WIDTH, (j + 1) * SPOT_DEPTH));
                     addFace(indices, vertices.size(), false);
                     addVertices(vertices, 0, j, (i + 1), false, true, true, textCoords);
 		

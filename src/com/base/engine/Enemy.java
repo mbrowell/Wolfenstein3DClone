@@ -32,6 +32,7 @@ public class Enemy {
     private static final float MOVEMENT_STOP_DISTANCE = 0.4f;
     private static final Vector2f SIZE = new Vector2f(SIZEX, SIZEZ);
     
+    private static final float SHOOT_DISTANCE = 1000;
     
     public static final float TEX_MIN_X = 0;
     public static final float TEX_MAX_X = -1;
@@ -53,7 +54,7 @@ public class Enemy {
         
         this.m_transform = transform;
         m_material = new Material(new Texture("SSWVA1.png"));
-        this.m_state = STATE_IDLE;
+        this.m_state = STATE_ATTACK;
         
         if(m_mesh == null) {
             
@@ -115,8 +116,24 @@ public class Enemy {
     
     private void attackUpdate(Vector3f orientation, float distance) {
         
-        m_state = 3;
+        Vector2f lineStart = new Vector2f (m_transform.getM_translation().getX(), m_transform.getM_translation().getZ());
+        Vector2f castDirection = new Vector2f(orientation.getX(), orientation.getZ());
+        Vector2f lineEnd = lineStart.add(castDirection.multiply(SHOOT_DISTANCE));
         
+        Vector2f collisionVector = Game.getM_level().checkIntersections(lineStart, lineEnd);
+        
+        if(collisionVector == null) {
+                    
+            System.out.println("We've hit nothing");
+                    
+        } else {
+                    
+            System.out.println("We've hit something");
+                    
+        }
+        
+        m_state = STATE_CHASE;
+
     }
     
     private void dyingUpdate(Vector3f orientation, float distance) {
