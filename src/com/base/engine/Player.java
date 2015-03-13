@@ -142,5 +142,12 @@ public class Player {
         return m_camera;
         
     }
+
+
+    public static Vector2f getPLAYER_DIMENSIONS() {
+        
+        return PLAYER_DIMENSIONS;
+        
+    }
     
 }

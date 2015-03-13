@@ -17,6 +17,8 @@
 
 package com.base.engine;
 
+import java.util.Random;
+
 /**
  *
  * @author Michael Browell <mbrowell1984@gmail.com>
@@ -44,17 +46,21 @@ public class Enemy {
     public static final int STATE_ATTACK = 2;
     public static final int STATE_DYING  = 3;
     public static final int STATE_DEAD   = 4;
+    
+    private static final float SHOT_ANGLE = 10;
 
     private static Mesh m_mesh;
     private final Material m_material;
     private final Transform m_transform;
     private int m_state;
+    private Random m_random;
     
     public Enemy(Transform transform) {
         
         this.m_transform = transform;
         m_material = new Material(new Texture("SSWVA1.png"));
         this.m_state = STATE_ATTACK;
+        this.m_random = new Random();
         
         if(m_mesh == null) {
             
@@ -88,7 +94,7 @@ public class Enemy {
     int i = 0;
     private void chaseUpdate(Vector3f orientation, float distance) {
         
-        float moveAmount = -MOVE_SPEED * (float)Time.getM_delta();
+        float moveAmount = MOVE_SPEED * (float)Time.getM_delta();
         
         if(distance > MOVEMENT_STOP_DISTANCE) {
             
@@ -117,10 +123,22 @@ public class Enemy {
     private void attackUpdate(Vector3f orientation, float distance) {
         
         Vector2f lineStart = new Vector2f (m_transform.getM_translation().getX(), m_transform.getM_translation().getZ());
-        Vector2f castDirection = new Vector2f(orientation.getX(), orientation.getZ());
+        Vector2f castDirection = new Vector2f(orientation.getX(), orientation.getZ()).rotate((m_random.nextFloat() - 0.5f) * SHOT_ANGLE);
         Vector2f lineEnd = lineStart.add(castDirection.multiply(SHOOT_DISTANCE));
         
         Vector2f collisionVector = Game.getM_level().checkIntersections(lineStart, lineEnd);
+        
+        Vector2f playerIntersectVector = Game.getM_level().lineIntersectRect(lineStart, lineEnd,
+                                                                                        new Vector2f(Transform.getM_camera().getM_pos().getX(), Transform.getM_camera().getM_pos().getZ()),
+                                                                                        Player.getPLAYER_DIMENSIONS());
+        
+        if(playerIntersectVector != null && (collisionVector == null ||
+                playerIntersectVector.subtract(lineStart).length() < collisionVector.subtract(lineStart).length())) {
+            
+            System.out.println("We've just hit the player");
+            m_state = STATE_CHASE;
+            
+        }
         
         if(collisionVector == null) {
                     
@@ -131,8 +149,6 @@ public class Enemy {
             System.out.println("We've hit something");
                     
         }
-        
-        m_state = STATE_CHASE;
 
     }
     
@@ -153,7 +169,7 @@ public class Enemy {
         
         float angleToFaceCamera = (float)Math.toDegrees(Math.atan(directionToCamera.getZ()/directionToCamera.getX()));
         
-        if(directionToCamera.getX() > 0) {
+        if(directionToCamera.getX() < 0) {
             
             angleToFaceCamera += 180;
             
@@ -171,7 +187,7 @@ public class Enemy {
     
     public void update() {
         
-        Vector3f directionToCamera = m_transform.getM_translation().subtract(Transform.getM_camera().getM_pos());
+        Vector3f directionToCamera = Transform.getM_camera().getM_pos().subtract(m_transform.getM_translation());
         
         float distance = directionToCamera.length();
         Vector3f orientation = directionToCamera.divide(distance);

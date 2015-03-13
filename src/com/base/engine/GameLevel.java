@@ -197,12 +197,16 @@ public class GameLevel {
             
             Vector2f collisionVector = lineIntersect(lineStart, lineEnd, collisionPosStart.get(i), collisionPosEnd.get(i));
             
-            if(collisionVector != null && (nearestIntersection == null ||
-                    nearestIntersection.subtract(lineStart).length() >  collisionVector.subtract(lineStart).length())) {
-                
-                nearestIntersection = collisionVector;
-                
-            }
+            nearestIntersection = findNearestVector2f(collisionVector, nearestIntersection, lineStart);
+            
+        }
+        
+        for(Door door : m_doors) {
+            
+            Vector2f collisionVector = lineIntersect(lineStart, lineEnd,
+                    new Vector2f(door.getM_transform().getM_translation().getX(), door.getM_transform().getM_translation().getZ()), door.getDoorSize());
+            
+            nearestIntersection = findNearestVector2f(collisionVector, nearestIntersection, lineStart);
             
         }
         
@@ -236,6 +240,51 @@ public class GameLevel {
         }
         
         return null;
+        
+    }
+    
+    private Vector2f findNearestVector2f(Vector2f a, Vector2f b, Vector2f positionRelativeTo) {
+        
+        if(b != null && (a == null ||
+                    a.subtract(positionRelativeTo).length() >  b.subtract(positionRelativeTo).length())) {
+                
+                return b;
+                
+            }
+        
+        return a;
+        
+    }
+    
+    /**
+     *
+     * @param lineStart
+     * @param lineEnd
+     * @param rectPos
+     * @param rectSize
+     * @return
+     */
+    public Vector2f lineIntersectRect(Vector2f lineStart, Vector2f lineEnd, Vector2f rectPos, Vector2f rectSize) {
+        
+        Vector2f result = null;
+        
+        Vector2f collisionVector = lineIntersect(lineStart, lineEnd, rectPos, new Vector2f(rectPos.getX() + rectSize.getX(),
+                                                                                           rectPos.getY()));
+        result = findNearestVector2f(result, collisionVector, lineStart);
+        
+        collisionVector = lineIntersect(lineStart, lineEnd, rectPos, new Vector2f(rectPos.getX(),
+                                                                                  rectPos.getY() + rectSize.getY()));
+        result = findNearestVector2f(result, collisionVector, lineStart);
+        
+        collisionVector = lineIntersect(lineStart, lineEnd, new Vector2f(rectPos.getX() + rectSize.getX(),
+                                                                                  rectPos.getY()), rectPos.add(rectSize));
+        result = findNearestVector2f(result, collisionVector, lineStart);
+        
+        collisionVector = lineIntersect(lineStart, lineEnd, new Vector2f(rectPos.getX(),
+                                                                         rectPos.getY() + rectSize.getY()), rectPos.add(rectSize));
+        result = findNearestVector2f(result, collisionVector, lineStart);
+        
+        return result;
         
     }
     
