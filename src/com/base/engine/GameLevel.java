@@ -47,8 +47,8 @@ public class GameLevel {
     
     private final ArrayList<Door> m_doors;
     
-    private ArrayList<Vector2f> collisionPosStart;
-    private ArrayList<Vector2f> collisionPosEnd;
+    private final ArrayList<Vector2f> collisionPosStart;
+    private final ArrayList<Vector2f> collisionPosEnd;
     
     public GameLevel(String levelName, String textureName, Player player) {
         
@@ -94,6 +94,7 @@ public class GameLevel {
         if(Input.getKeyDown(Input.KEY_E)) {
             
             openDoors(m_player.getM_camera().getM_pos());
+            enemy.damage(30);
             
         }
         
@@ -203,7 +204,7 @@ public class GameLevel {
         
         for(Door door : m_doors) {
             
-            Vector2f collisionVector = lineIntersect(lineStart, lineEnd,
+            Vector2f collisionVector = lineIntersectRect(lineStart, lineEnd,
                     new Vector2f(door.getM_transform().getM_translation().getX(), door.getM_transform().getM_translation().getZ()), door.getDoorSize());
             
             nearestIntersection = findNearestVector2f(collisionVector, nearestIntersection, lineStart);

@@ -48,18 +48,25 @@ public class Enemy {
     public static final int STATE_DEAD   = 4;
     
     private static final float SHOT_ANGLE = 10;
+    private static final double ATTACK_CHANCE = 0.5d;
+    public static final int MAX_HEALTH = 100;
 
     private static Mesh m_mesh;
     private final Material m_material;
     private final Transform m_transform;
     private int m_state;
-    private Random m_random;
+    private int m_health;
+    private boolean m_canLook;
+    private boolean m_canAttack;
+    private final Random m_random;
     
     public Enemy(Transform transform) {
         
         this.m_transform = transform;
         m_material = new Material(new Texture("SSWVA1.png"));
-        this.m_state = STATE_ATTACK;
+        this.m_state = STATE_IDLE;
+        this.m_health = MAX_HEALTH;
+        this.m_canLook = false;
         this.m_random = new Random();
         
         if(m_mesh == null) {
@@ -86,17 +93,74 @@ public class Enemy {
         
     }
     
-    private void idleUpdate(Vector3f orientation, float distance) {
+    public void damage(int amt) {
         
-        m_state = 1;
+        if(m_state == STATE_IDLE) {
+            
+            m_state = STATE_CHASE;
+            
+        }
+        
+        m_health -= amt;
+        
+        if(m_health <= 0) {
+            
+            m_state = STATE_DYING;
+            
+        }
+        
+    }
+    
+    private void idleUpdate(Vector3f orientation) {
+        
+        double time = ((double)Time.getTime())/((double)Time.SECOND);
+        double timeDecimals = time - (double)((int)time);
+        
+        if(timeDecimals < 0.5) {
+            
+            m_canLook = true;
+            
+        } else {
+            
+            if(m_canLook) {
+                
+                Vector2f lineStart = new Vector2f (m_transform.getM_translation().getX(), m_transform.getM_translation().getZ());
+                Vector2f castDirection = new Vector2f(orientation.getX(), orientation.getZ()).rotate((m_random.nextFloat()));
+                Vector2f lineEnd = lineStart.add(castDirection.multiply(SHOOT_DISTANCE));
+                
+                Vector2f collisionVector = Game.getM_level().checkIntersections(lineStart, lineEnd);
+                
+                Vector2f playerIntersectVector = Game.getM_level().lineIntersectRect(lineStart, lineEnd,
+                                                                                     new Vector2f(Transform.getM_camera().getM_pos().getX(), Transform.getM_camera().getM_pos().getZ()),
+                                                                                     Player.getPLAYER_DIMENSIONS());
+                
+                if(playerIntersectVector != null && (collisionVector == null ||
+                    playerIntersectVector.subtract(lineStart).length() < collisionVector.subtract(lineStart).length())) {
+                    
+                    System.out.println("We've just seen the player");
+                    m_state = STATE_CHASE;
+                    
+                }
+                
+                m_canLook = false;
+                
+            }
+            
+        }
         
     }
     int i = 0;
     private void chaseUpdate(Vector3f orientation, float distance) {
         
-        float moveAmount = MOVE_SPEED * (float)Time.getM_delta();
+        if(m_random.nextDouble() < ATTACK_CHANCE * Time.getM_delta()) {
+            
+            m_state = STATE_ATTACK;
+            
+        }
         
         if(distance > MOVEMENT_STOP_DISTANCE) {
+            
+            float moveAmount = MOVE_SPEED * (float)Time.getM_delta();
             
             Vector3f oldPos = m_transform.getM_translation();
             Vector3f newPos = oldPos.add(orientation.multiply(moveAmount));
@@ -120,47 +184,65 @@ public class Enemy {
         
     }
     
-    private void attackUpdate(Vector3f orientation, float distance) {
+    private void attackUpdate(Vector3f orientation) {
         
-        Vector2f lineStart = new Vector2f (m_transform.getM_translation().getX(), m_transform.getM_translation().getZ());
-        Vector2f castDirection = new Vector2f(orientation.getX(), orientation.getZ()).rotate((m_random.nextFloat() - 0.5f) * SHOT_ANGLE);
-        Vector2f lineEnd = lineStart.add(castDirection.multiply(SHOOT_DISTANCE));
+        double time = ((double)Time.getTime())/((double)Time.SECOND);
+        double timeDecimals = time - (double)((int)time);
         
-        Vector2f collisionVector = Game.getM_level().checkIntersections(lineStart, lineEnd);
-        
-        Vector2f playerIntersectVector = Game.getM_level().lineIntersectRect(lineStart, lineEnd,
-                                                                                        new Vector2f(Transform.getM_camera().getM_pos().getX(), Transform.getM_camera().getM_pos().getZ()),
-                                                                                        Player.getPLAYER_DIMENSIONS());
-        
-        if(playerIntersectVector != null && (collisionVector == null ||
-                playerIntersectVector.subtract(lineStart).length() < collisionVector.subtract(lineStart).length())) {
+        if(timeDecimals < 0.5) {
             
-            System.out.println("We've just hit the player");
-            m_state = STATE_CHASE;
+            m_canAttack = true;
             
-        }
-        
-        if(collisionVector == null) {
-                    
-            System.out.println("We've hit nothing");
-                    
         } else {
+            
+            if(m_canAttack) {
+                
+                Vector2f lineStart = new Vector2f (m_transform.getM_translation().getX(), m_transform.getM_translation().getZ());
+                Vector2f castDirection = new Vector2f(orientation.getX(), orientation.getZ()).rotate((m_random.nextFloat() - 0.5f) * SHOT_ANGLE);
+                Vector2f lineEnd = lineStart.add(castDirection.multiply(SHOOT_DISTANCE));
+                
+                Vector2f collisionVector = Game.getM_level().checkIntersections(lineStart, lineEnd);
+        
+                Vector2f playerIntersectVector = Game.getM_level().lineIntersectRect(lineStart, lineEnd,
+                                                                                     new Vector2f(Transform.getM_camera().getM_pos().getX(), Transform.getM_camera().getM_pos().getZ()),
+                                                                                     Player.getPLAYER_DIMENSIONS());
+                
+                if(playerIntersectVector != null && (collisionVector == null ||
+                    playerIntersectVector.subtract(lineStart).length() < collisionVector.subtract(lineStart).length())) {
+            
+                    System.out.println("We've just hit the player");
+                    m_state = STATE_CHASE;
+                    m_canAttack = false;
+            
+                }
+                
+                if(collisionVector == null) {
                     
-            System.out.println("We've hit something");
+                    System.out.println("We've hit nothing");
                     
+                } else {
+                    
+                    System.out.println("We've hit something");
+                    m_state = STATE_CHASE;
+                    m_canAttack = false;
+                    
+                }
+                
+            }
+            
         }
 
     }
     
     private void dyingUpdate(Vector3f orientation, float distance) {
         
-        m_state = 4;
+        m_state = STATE_DEAD;
         
     }
     
     private void deadUpdate(Vector3f orientation, float distance) {
         
-        m_state = 0;
+        
         
     }
     
@@ -199,7 +281,7 @@ public class Enemy {
             
             case STATE_IDLE:
                 
-                idleUpdate(orientation, distance);
+                idleUpdate(orientation);
                 break;
                 
             case STATE_CHASE:
@@ -209,7 +291,7 @@ public class Enemy {
                 
             case STATE_ATTACK:
                 
-                attackUpdate(orientation, distance);
+                attackUpdate(orientation);
                 break;
                 
             case STATE_DYING:
