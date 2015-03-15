@@ -29,9 +29,9 @@ public class Attenuation {
     
     public Attenuation(float constant, float linear, float exponent) {
         
-        this.m_constant = constant;
-        this.m_linear = linear;
-        this.m_exponent = exponent;
+        m_constant = constant;
+        m_linear = linear;
+        m_exponent = exponent;
         
     }
 
@@ -43,7 +43,7 @@ public class Attenuation {
 
     public void setM_constant(float constant) {
         
-        this.m_constant = constant;
+        m_constant = constant;
         
     }
 
@@ -55,7 +55,7 @@ public class Attenuation {
 
     public void setM_linear(float linear) {
         
-        this.m_linear = linear;
+        m_linear = linear;
         
     }
 
@@ -67,7 +67,7 @@ public class Attenuation {
 
     public void setM_exponent(float exponent) {
         
-        this.m_exponent = exponent;
+        m_exponent = exponent;
         
     }
     

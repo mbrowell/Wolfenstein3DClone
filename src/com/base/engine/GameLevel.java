@@ -109,8 +109,6 @@ public class GameLevel {
         m_shader.updateUniforms(m_transform.getTransformation(), m_transform.getProjectedTransformation(), m_material);
         m_mesh.draw();
         
-        m_player.render();
-        
         for(Door door : m_doors) {
             
             door.render();
@@ -122,6 +120,8 @@ public class GameLevel {
             enemy.render();
             
         }
+        
+        m_player.render();
         
     }
 

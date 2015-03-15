@@ -23,6 +23,12 @@ package com.base.engine;
  */
 public class Player {
     
+    public static final float SCALE = 0.0625f;
+    public static final float SIZEY = SCALE;
+    public static final float SIZEX = (float)((double)SIZEY / (1.0379746835443037974683544303797 * 2));
+    public static final float START = 0;
+    public static final float OFFSET = -0.0125f;
+    
     private static final Vector2f CENTRE_POSITION = new Vector2f(Window.getWidth() / 2, Window.getHeight() / 2);
     private static final float MOUSE_SENSITIVITY = 0.2f;
     private static final float MOVE_SPEED = 7;
@@ -31,11 +37,20 @@ public class Player {
     private static final Vector2f PLAYER_DIMENSIONS = new Vector2f(PLAYER_SIZE, PLAYER_SIZE);
     private static final Vector3f ZERO_VECTOR = new Vector3f(0, 0, 0);
     
+    public static final float TEX_MIN_X = 0;
+    public static final float TEX_MAX_X = -1;
+    public static final float TEX_MIN_Y = 0;
+    public static final float TEX_MAX_Y = 1;
+    
     private static final float SHOOT_DISTANCE = 1000;
     private static final int MAX_HEALTH = 100;
     
     private int m_health;
     
+    private static Mesh m_mesh;
+    private static Material m_gunMaterial;
+    
+    private final Transform m_gunTransform;
     private final Camera m_camera;
     
     private boolean m_mouseLocked = false;
@@ -46,6 +61,36 @@ public class Player {
         
          m_camera = new Camera(position, new Vector3f(0, 0, -1), new Vector3f(0, 1, 0));
          m_health = MAX_HEALTH;
+         
+         if(m_mesh == null) {
+            
+            Vertex[] vertices = new Vertex[] {
+                
+                new Vertex(new Vector3f(-SIZEX, START, START), new Vector2f(TEX_MAX_X, TEX_MAX_Y)),
+                new Vertex(new Vector3f(-SIZEX, SIZEY, START), new Vector2f(TEX_MAX_X, TEX_MIN_Y)),
+                new Vertex(new Vector3f(SIZEX, SIZEY, START), new Vector2f(TEX_MIN_X, TEX_MIN_Y)),
+                new Vertex(new Vector3f(SIZEX, START, START), new Vector2f(TEX_MIN_X, TEX_MAX_Y))
+                
+                };
+            
+            int[] indices = new int[]{
+                
+                0,1,2,
+                0,2,3
+                
+            };
+            
+            m_mesh = new Mesh(vertices, indices);
+            
+        }
+         
+         if(m_gunMaterial == null) {
+             
+             m_gunMaterial = new Material(new Texture("PISGB0.png"));
+             
+         }
+         
+         m_gunTransform = new Transform();
         
     }
     
@@ -105,22 +150,10 @@ public class Player {
 
                     if(enemyIntersectVector != null && (collisionVector == null ||
                         enemyIntersectVector.subtract(lineStart).length() < collisionVector.subtract(lineStart).length())) {
-
-                        System.out.println("We've just hit the enemy");
+                        
                         enemy.damage(30);
 
                     }
-                    
-                    // DEBUG CODE
-//                    if(collisionVector == null) {
-//
-//                        System.out.println("We've hit nothing");
-//
-//                    } else {
-//
-//                        System.out.println("We've hit something");
-//
-//                    }
 
                 }
                 
@@ -195,13 +228,35 @@ public class Player {
         Vector3f collisionVector = Game.getM_level().checkCollision(oldPos, newPos, PLAYER_DIMENSIONS);
         m_movementVector = m_movementVector.multiply(collisionVector);
         
-        m_camera.move(m_movementVector, moveAmt);
+        if(m_movementVector.length() > 0) {
+            
+            m_camera.move(m_movementVector, moveAmt);
+            
+        }
+        
+        m_gunTransform.setM_translation(m_camera.getM_pos().add(m_camera.getM_forward().normalized().multiply(0.105f)));
+        m_gunTransform.getM_translation().setY(m_gunTransform.getM_translation().getY() + OFFSET);
+        
+        Vector3f directionToCamera = Transform.getM_camera().getM_pos().subtract(m_gunTransform.getM_translation());
+        
+        float angleToFaceCamera = (float)Math.toDegrees(Math.atan(directionToCamera.getZ()/directionToCamera.getX()));
+        
+        if(directionToCamera.getX() < 0) {
+            
+            angleToFaceCamera += 180;
+            
+        }
+        
+        m_gunTransform.getM_rotation().setY(angleToFaceCamera + 90);
+        
         
     }
     
     public void render() {
         
-        
+        Shader shader = GameLevel.getM_shader();
+        shader.updateUniforms(m_gunTransform.getTransformation(), m_gunTransform.getProjectedTransformation(), m_gunMaterial);
+        m_mesh.draw();
         
     }
 

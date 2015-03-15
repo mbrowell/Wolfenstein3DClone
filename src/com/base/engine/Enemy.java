@@ -17,6 +17,7 @@
 
 package com.base.engine;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -30,9 +31,10 @@ public class Enemy {
     public static final float SIZEX = (float)((double)SIZEY / (1.91034487258620696551724137931 * 2));
     public static final float SIZEZ = 0.2f;
     public static final float START = 0;
+    private static final Vector2f SIZE = new Vector2f(SIZEX, SIZEZ);
+    
     private static final float MOVE_SPEED = 2.8f;
     private static final float MOVEMENT_STOP_DISTANCE = 0.4f;
-    private static final Vector2f SIZE = new Vector2f(SIZEX, SIZEZ);
     
     private static final float SHOOT_DISTANCE = 1000;
     
@@ -60,14 +62,32 @@ public class Enemy {
     private boolean m_canAttack;
     private final Random m_random;
     
+    private static ArrayList<Texture> m_animFrames;
+    
     public Enemy(Transform transform) {
         
-        this.m_transform = transform;
-        m_material = new Material(new Texture("SSWVA1.png"));
-        this.m_state = STATE_IDLE;
-        this.m_health = MAX_HEALTH;
-        this.m_canLook = false;
-        this.m_random = new Random();
+        if(m_animFrames == null) {
+            
+            m_animFrames = new ArrayList<>();
+            
+            m_animFrames.add(new Texture("SSWVA1.png"));
+            m_animFrames.add(new Texture("SSWVB1.png"));
+            m_animFrames.add(new Texture("SSWVC1.png"));
+            m_animFrames.add(new Texture("SSWVD1.png"));
+            
+            m_animFrames.add(new Texture("SSWVE0.png"));
+            m_animFrames.add(new Texture("SSWVF0.png"));
+            m_animFrames.add(new Texture("SSWVG0.png"));
+            
+            m_animFrames.add(new Texture("SSWVH0.png"));
+            m_animFrames.add(new Texture("SSWVI0.png"));
+            m_animFrames.add(new Texture("SSWVJ0.png"));
+            m_animFrames.add(new Texture("SSWVK0.png"));
+            m_animFrames.add(new Texture("SSWVL0.png"));
+            
+            m_animFrames.add(new Texture("SSWVM0.png"));
+            
+        }
         
         if(m_mesh == null) {
             
@@ -90,6 +110,13 @@ public class Enemy {
             m_mesh = new Mesh(vertices, indices);
             
         }
+        
+        m_transform = transform;
+        m_material = new Material(m_animFrames.get(0));
+        m_state = STATE_IDLE;
+        m_health = MAX_HEALTH;
+        m_canLook = false;
+        m_random = new Random();
         
     }
     
@@ -119,8 +146,11 @@ public class Enemy {
         if(timeDecimals < 0.5) {
             
             m_canLook = true;
+            m_material.setM_texture(m_animFrames.get(0));
             
         } else {
+            
+            m_material.setM_texture(m_animFrames.get(1));
             
             if(m_canLook) {
                 
@@ -137,7 +167,6 @@ public class Enemy {
                 if(playerIntersectVector != null && (collisionVector == null ||
                     playerIntersectVector.subtract(lineStart).length() < collisionVector.subtract(lineStart).length())) {
                     
-                    System.out.println("We've just seen the player");
                     m_state = STATE_CHASE;
                     
                 }
@@ -151,6 +180,27 @@ public class Enemy {
     }
     int i = 0;
     private void chaseUpdate(Vector3f orientation, float distance) {
+        
+        double time = ((double)Time.getTime())/((double)Time.SECOND);
+        double timeDecimals = time - (double)((int)time);
+        
+        if(timeDecimals < 0.25) {
+            
+            m_material.setM_texture(m_animFrames.get(0));
+            
+        } else if(timeDecimals < 0.5) {
+            
+            m_material.setM_texture(m_animFrames.get(1));
+            
+        } else if(timeDecimals < 0.75) {
+            
+            m_material.setM_texture(m_animFrames.get(2));
+            
+        } else {
+            
+            m_material.setM_texture(m_animFrames.get(3));
+            
+        }
         
         if(m_random.nextDouble() < ATTACK_CHANCE * Time.getM_delta()) {
             
@@ -189,11 +239,18 @@ public class Enemy {
         double time = ((double)Time.getTime())/((double)Time.SECOND);
         double timeDecimals = time - (double)((int)time);
         
-        if(timeDecimals < 0.5) {
+        if(timeDecimals < 0.25) {
             
             m_canAttack = true;
+            m_material.setM_texture(m_animFrames.get(4));
             
-        } else {
+        } else if(timeDecimals < 0.5) {
+            
+            m_material.setM_texture(m_animFrames.get(5));
+            
+        }else if(timeDecimals < 0.75) {
+            
+            m_material.setM_texture(m_animFrames.get(6));
             
             if(m_canAttack) {
                 
@@ -217,20 +274,11 @@ public class Enemy {
             
                 }
                 
-                // DEBUG CODE
-//                if(collisionVector == null) {
-//                    
-//                    System.out.println("We've hit nothing");
-//                    
-//                } else {
-//                    
-//                    System.out.println("We've hit something");
-//                    m_state = STATE_CHASE;
-//                    m_canAttack = false;
-//                    
-//                }
-                
             }
+            
+        } else {
+            
+            m_material.setM_texture(m_animFrames.get(5));
             
         }
 
@@ -238,13 +286,41 @@ public class Enemy {
     
     private void dyingUpdate(Vector3f orientation, float distance) {
         
-        m_state = STATE_DEAD;
+        double time = ((double)Time.getTime())/((double)Time.SECOND);
+        double timeDecimals = time - (double)((int)time);
+        
+        if(timeDecimals < 0.1) {
+            
+            m_material.setM_texture(m_animFrames.get(8));
+            m_transform.setM_scale(1,0.96428571428571428571428571428571f,1);
+            
+        } else if(timeDecimals < 0.3) {
+            
+            m_material.setM_texture(m_animFrames.get(9));
+            m_transform.setM_scale(1.7f,0.9f,1);
+            
+        } else if(timeDecimals < 0.45) {
+            
+            m_material.setM_texture(m_animFrames.get(10));
+            m_transform.setM_scale(1.7f,0.9f,1);
+            
+        } else if(timeDecimals < 0.6) {
+            
+            m_material.setM_texture(m_animFrames.get(11));
+            m_transform.setM_scale(1.7f,0.5f,1);
+            
+        } else {
+            
+            m_state = STATE_DEAD;
+            
+        }
         
     }
     
     private void deadUpdate(Vector3f orientation, float distance) {
         
-        
+        m_material.setM_texture(m_animFrames.get(12));
+        m_transform.setM_scale(1.7586206896551724137931034482759f,0.28571428571428571428571428571429f,1);
         
     }
     
