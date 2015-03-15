@@ -213,20 +213,22 @@ public class Enemy {
                     System.out.println("We've just hit the player");
                     m_state = STATE_CHASE;
                     m_canAttack = false;
+                    Game.getM_level().getM_player().damage(10);
             
                 }
                 
-                if(collisionVector == null) {
-                    
-                    System.out.println("We've hit nothing");
-                    
-                } else {
-                    
-                    System.out.println("We've hit something");
-                    m_state = STATE_CHASE;
-                    m_canAttack = false;
-                    
-                }
+                // DEBUG CODE
+//                if(collisionVector == null) {
+//                    
+//                    System.out.println("We've hit nothing");
+//                    
+//                } else {
+//                    
+//                    System.out.println("We've hit something");
+//                    m_state = STATE_CHASE;
+//                    m_canAttack = false;
+//                    
+//                }
                 
             }
             
@@ -313,6 +315,18 @@ public class Enemy {
         Shader shader = GameLevel.getM_shader();
         shader.updateUniforms(m_transform.getTransformation(), m_transform.getProjectedTransformation(), m_material);
         m_mesh.draw();
+        
+    }
+
+    public static Vector2f getSIZE() {
+        
+        return SIZE;
+        
+    }
+
+    public Transform getM_transform() {
+        
+        return m_transform;
         
     }
     

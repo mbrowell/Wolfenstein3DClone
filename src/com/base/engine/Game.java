@@ -23,6 +23,7 @@ package com.base.engine;
 public class Game {
     
     private static GameLevel m_level;
+    private static boolean m_isRunning;
         
     /**
      *
@@ -33,6 +34,7 @@ public class Game {
         Player player = new Player(new Vector3f(10, 0.4275f, 20));
         
         m_level = new GameLevel("level1.png", "WolfCollection.png", player);
+        m_isRunning = true;
         
         Transform.setM_camera(player.getM_camera());
         Transform.setProjection(70, Window.getWidth(), Window.getHeight(), .01f, 1000);
@@ -41,7 +43,7 @@ public class Game {
     
     public void input() {
         
-       m_level.input();
+        m_level.input();
         
     }
     
@@ -50,7 +52,11 @@ public class Game {
      */
     public void update() {
         
-        m_level.update();
+        if(m_isRunning) {
+            
+            m_level.update();
+            
+        }
         
     }
     
@@ -59,13 +65,29 @@ public class Game {
      */
     public void render() {
         
-        m_level.render();
+        if(m_isRunning) {
+            
+            m_level.render();
+                    
+        }
         
     }
 
     public static GameLevel getM_level() {
         
         return m_level;
+        
+    }
+
+    public static boolean isM_isRunning() {
+        
+        return m_isRunning;
+        
+    }
+
+    public static void setM_isRunning(boolean isRunning) {
+        
+        Game.m_isRunning = isRunning;
         
     }
     

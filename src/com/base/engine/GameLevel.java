@@ -43,12 +43,12 @@ public class GameLevel {
     private static Transform m_transform;
     
     private final Player m_player;
-    private final Enemy enemy;
     
-    private final ArrayList<Door> m_doors;
+    private ArrayList<Door> m_doors;
+    private ArrayList<Enemy> m_enemies;
     
-    private final ArrayList<Vector2f> collisionPosStart;
-    private final ArrayList<Vector2f> collisionPosEnd;
+    private ArrayList<Vector2f> collisionPosStart;
+    private ArrayList<Vector2f> collisionPosEnd;
     
     public GameLevel(String levelName, String textureName, Player player) {
         
@@ -57,21 +57,11 @@ public class GameLevel {
         m_shader = BasicShader.getM_instance();
         m_material = new Material(new Texture(textureName));
         
-        m_doors = new ArrayList<>();
-        
-        collisionPosStart = new ArrayList<>();
-        collisionPosEnd = new ArrayList<>();
-        
         generateLevel();
         
         m_transform = new Transform();
         
         this.m_player = player;
-        
-        Transform tempTransform = new Transform();
-        tempTransform.setM_translation(new Vector3f(8, 0, 8));
-        
-        enemy = new Enemy(tempTransform);
         
     }
     
@@ -91,26 +81,25 @@ public class GameLevel {
     
     public void input() {
         
-        if(Input.getKeyDown(Input.KEY_E)) {
-            
-            openDoors(m_player.getM_camera().getM_pos());
-            enemy.damage(30);
-            
-        }
-        
         m_player.input();
         
     }
     
     public void update() {
         
+        m_player.update();
+        
         for(Door door : m_doors) {
             
             door.update();
             
         }
-        m_player.update();
-        enemy.update();
+        
+        for(Enemy enemy : m_enemies) {
+            
+            enemy.update();
+            
+        }
         
     }
     
@@ -119,13 +108,20 @@ public class GameLevel {
         m_shader.bind();
         m_shader.updateUniforms(m_transform.getTransformation(), m_transform.getProjectedTransformation(), m_material);
         m_mesh.draw();
+        
+        m_player.render();
+        
         for(Door door : m_doors) {
             
             door.render();
             
         }
-        m_player.render();
-        enemy.render();
+        
+        for(Enemy enemy : m_enemies) {
+            
+            enemy.render();
+            
+        }
         
     }
 
@@ -409,6 +405,16 @@ public class GameLevel {
     
     private void generateLevel() {
         
+        m_doors = new ArrayList<>();
+        m_enemies = new ArrayList<>();
+        
+        collisionPosStart = new ArrayList<>();
+        collisionPosEnd = new ArrayList<>();
+        
+        Transform tempTransform = new Transform();
+        tempTransform.setM_translation(new Vector3f(8, 0, 8));
+        m_enemies.add(new Enemy(tempTransform));
+        
         ArrayList<Vertex> vertices = new ArrayList<>();
         ArrayList<Integer> indices = new ArrayList<>();
         
@@ -487,6 +493,18 @@ public class GameLevel {
     public static Shader getM_shader() {
         
         return m_shader;
+        
+    }
+
+    public ArrayList<Enemy> getM_enemies() {
+        
+        return m_enemies;
+        
+    }
+
+    public Player getM_player() {
+        
+        return m_player;
         
     }
     
