@@ -23,12 +23,12 @@ package com.base.engine;
  */
 public class Door {
     
-    public static final float WIDTH = 1;
-    public static final float HEIGHT = 1;
-    public static final float DEPTH = 0.04f;
-    public static final float START = 0;
-    public static final double TIME_TO_OPEN = 1;
-    public static final double CLOSE_DELAY = 2;
+    private static final float WIDTH = 1;
+    private static final float HEIGHT = 1;
+    private static final float DEPTH = 0.04f;
+    private static final float START = 0;
+    private static final double TIME_TO_OPEN = 1;
+    private static final double CLOSE_DELAY = 2;
     
     private static Mesh m_mesh;
     private final Material m_material;
@@ -45,11 +45,11 @@ public class Door {
 
     public Door(Transform transform, Material material, Vector3f openPosition) {
         
-        this.m_transform = transform;
-        this.m_material = material;
-        this.m_isOpening = false;
-        this.m_closePosition = m_transform.getM_translation().multiply(1);
-        this.m_openPosition = openPosition;
+        m_transform = transform;
+        m_material = material;
+        m_isOpening = false;
+        m_closePosition = m_transform.getM_translation().multiply(1);
+        m_openPosition = openPosition;
         
         if(m_mesh == null) {
             
@@ -66,10 +66,10 @@ public class Door {
                 new Vertex(new Vector3f(START, HEIGHT, DEPTH), new Vector2f(0, 0)),
                 new Vertex(new Vector3f(START, START, DEPTH), new Vector2f(0, 0)),
                  
-                new Vertex(new Vector3f(START, START, DEPTH), new Vector2f(0, 0.75f)),
-                new Vertex(new Vector3f(START, HEIGHT, DEPTH), new Vector2f(0, 0.5f)),
-                new Vertex(new Vector3f(WIDTH, HEIGHT, DEPTH), new Vector2f(0.25f, 0.5f)),
-                new Vertex(new Vector3f(WIDTH, START, DEPTH), new Vector2f(0.25f, 0.75f)),
+                new Vertex(new Vector3f(START, START, DEPTH), new Vector2f(0.5f, 1)),
+                new Vertex(new Vector3f(START, HEIGHT, DEPTH), new Vector2f(0.5f, 0.75f)),
+                new Vertex(new Vector3f(WIDTH, HEIGHT, DEPTH), new Vector2f(0.75f, 0.75f)),
+                new Vertex(new Vector3f(WIDTH, START, DEPTH), new Vector2f(0.75f, 1)),
                 
                 new Vertex(new Vector3f(WIDTH, START, START), new Vector2f(0, 0)),
                 new Vertex(new Vector3f(WIDTH, HEIGHT, START), new Vector2f(0, 0)),

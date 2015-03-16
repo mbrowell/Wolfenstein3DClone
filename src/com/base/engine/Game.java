@@ -23,6 +23,7 @@ package com.base.engine;
 public class Game {
     
     private static GameLevel m_level;
+    private static int m_levelNum = 0;
     private static boolean m_isRunning;
         
     /**
@@ -31,13 +32,7 @@ public class Game {
     @SuppressWarnings("LeakingThisInConstructor")
     public Game() {
         
-        Player player = new Player(new Vector3f(10, 0.4275f, 20));
-        
-        m_level = new GameLevel("level1.png", "WolfCollection.png", player);
-        m_isRunning = true;
-        
-        Transform.setM_camera(player.getM_camera());
-        Transform.setProjection(70, Window.getWidth(), Window.getHeight(), .01f, 1000);
+        loadLevel();
             
     }
     
@@ -76,6 +71,18 @@ public class Game {
     public static GameLevel getM_level() {
         
         return m_level;
+        
+    }
+    
+    public static void loadLevel() {
+        
+        m_levelNum++;
+        m_level = new GameLevel("level" + m_levelNum + ".png", "WolfCollection.png");
+        
+        m_isRunning = true;
+        
+        Transform.setM_camera(m_level.getM_player().getM_camera());
+        Transform.setProjection(70, Window.getWidth(), Window.getHeight(), .01f, 1000);
         
     }
 

@@ -23,11 +23,11 @@ package com.base.engine;
  */
 public class Player {
     
-    public static final float SCALE = 0.0625f;
-    public static final float SIZEY = SCALE;
-    public static final float SIZEX = (float)((double)SIZEY / (1.0379746835443037974683544303797 * 2));
-    public static final float START = 0;
-    public static final float OFFSET = -0.0125f;
+    private static final float SCALE = 0.0625f;
+    private static final float SIZEY = SCALE;
+    private static final float SIZEX = (float)((double)SIZEY / (1.0379746835443037974683544303797 * 2));
+    private static final float START = 0;
+    private static final float OFFSET = -0.0125f;
     
     private static final Vector2f CENTRE_POSITION = new Vector2f(Window.getWidth() / 2, Window.getHeight() / 2);
     private static final float MOUSE_SENSITIVITY = 0.2f;
@@ -37,10 +37,10 @@ public class Player {
     private static final Vector2f PLAYER_DIMENSIONS = new Vector2f(PLAYER_SIZE, PLAYER_SIZE);
     private static final Vector3f ZERO_VECTOR = new Vector3f(0, 0, 0);
     
-    public static final float TEX_MIN_X = 0;
-    public static final float TEX_MAX_X = -1;
-    public static final float TEX_MIN_Y = 0;
-    public static final float TEX_MAX_Y = 1;
+    private static final float TEX_MIN_X = 0;
+    private static final float TEX_MAX_X = -1;
+    private static final float TEX_MIN_Y = 0;
+    private static final float TEX_MAX_Y = 1;
     
     private static final float SHOOT_DISTANCE = 1000;
     private static final int MAX_HEALTH = 100;
@@ -53,7 +53,7 @@ public class Player {
     private final Transform m_gunTransform;
     private final Camera m_camera;
     
-    private boolean m_mouseLocked = false;
+    private static boolean m_mouseLocked = false;
     
     private Vector3f m_movementVector;
     
@@ -91,6 +91,8 @@ public class Player {
          }
          
          m_gunTransform = new Transform();
+         m_gunTransform.setM_translation(new Vector3f(7, 0, 7));
+         m_movementVector = ZERO_VECTOR;
         
     }
     
@@ -103,6 +105,8 @@ public class Player {
             m_health = MAX_HEALTH;
             
         }
+        
+        System.out.println("Health: " + m_health);
         
         if(m_health <= 0) {
             
@@ -117,7 +121,7 @@ public class Player {
         
         if(Input.getKeyDown(Input.KEY_E)) {
             
-            Game.getM_level().openDoors(m_camera.getM_pos());
+            Game.getM_level().openDoors(m_camera.getM_pos(), true);
             
         }
         
@@ -140,22 +144,8 @@ public class Player {
                 Vector2f lineStart = new Vector2f(getM_camera().getM_pos().getX(), getM_camera().getM_pos().getZ());
                 Vector2f castDirection = new Vector2f(getM_camera().getM_forward().getX(), getM_camera().getM_pos().getZ()).normalized();
                 Vector2f lineEnd = lineStart.add(castDirection.multiply(SHOOT_DISTANCE));
-                    
-                for(Enemy enemy : Game.getM_level().getM_enemies()) {
 
-                    Vector2f collisionVector = Game.getM_level().checkIntersections(lineStart, lineEnd);
-                    Vector2f enemyIntersectVector = Game.getM_level().lineIntersectRect(lineStart, lineEnd,
-                                                                                        new Vector2f(enemy.getM_transform().getM_translation().getX(), enemy.getM_transform().getM_translation().getX()),
-                                                                                        lineEnd);
-
-                    if(enemyIntersectVector != null && (collisionVector == null ||
-                        enemyIntersectVector.subtract(lineStart).length() < collisionVector.subtract(lineStart).length())) {
-                        
-                        enemy.damage(30);
-
-                    }
-
-                }
+                Game.getM_level().checkIntersections(lineStart, lineEnd, true);
                 
             }
             
@@ -270,6 +260,18 @@ public class Player {
     public static Vector2f getPLAYER_DIMENSIONS() {
         
         return PLAYER_DIMENSIONS;
+        
+    }
+
+    public static int getMAX_HEALTH() {
+        
+        return MAX_HEALTH;
+        
+    }
+
+    public int getM_health() {
+        
+        return m_health;
         
     }
     

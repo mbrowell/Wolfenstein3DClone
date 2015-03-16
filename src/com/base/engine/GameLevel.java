@@ -42,40 +42,60 @@ public class GameLevel {
     private static Mesh m_mesh;
     private static Transform m_transform;
     
-    private final Player m_player;
+    private Player m_player;
     
     private ArrayList<Door> m_doors;
     private ArrayList<Enemy> m_enemies;
+    private ArrayList<Medkit> m_medkits;
+    
+    private final ArrayList<Medkit> m_medkitsToRemove;
+    private final ArrayList<Vector3f> m_exitPoints;
     
     private ArrayList<Vector2f> collisionPosStart;
     private ArrayList<Vector2f> collisionPosEnd;
     
-    public GameLevel(String levelName, String textureName, Player player) {
+    public GameLevel(String levelName, String textureName) {
         
         m_level = new Bitmap(levelName).reflectOnX();
         
         m_shader = BasicShader.getM_instance();
         m_material = new Material(new Texture(textureName));
+        m_medkitsToRemove = new ArrayList<>();
+        m_exitPoints = new ArrayList<>();
         
         generateLevel();
         
         m_transform = new Transform();
         
-        this.m_player = player;
+        
         
     }
     
-    public void openDoors(Vector3f position) {
+    public void openDoors(Vector3f position, boolean exitCheck) {
         
         for(Door door : m_doors) {
                 
-                if(door.getM_transform().getM_translation().subtract(position).length() < OPEN_DISTANCE) {
+            if(door.getM_transform().getM_translation().subtract(position).length() < OPEN_DISTANCE) {
+
+                door.open();
+
+            }
+
+        }
+        
+        if(exitCheck)  {
+            
+            for(Vector3f exitPoint : m_exitPoints) {
+                
+                if(exitPoint.subtract(position).length() < OPEN_DISTANCE) {
                     
-                    door.open();
+                    Game.loadLevel();
                     
                 }
                 
             }
+            
+        }
         
     }
     
@@ -101,6 +121,18 @@ public class GameLevel {
             
         }
         
+        for(Medkit medkit : m_medkits) {
+            
+            medkit.update();
+            
+        }
+        
+        for(Medkit medkit : m_medkitsToRemove) {
+            
+            m_medkits.remove(medkit);
+            
+        }
+        
     }
     
     public void render() {
@@ -118,6 +150,12 @@ public class GameLevel {
         for(Enemy enemy : m_enemies) {
             
             enemy.render();
+            
+        }
+        
+        for(Medkit medkit : m_medkits) {
+            
+            medkit.render();
             
         }
         
@@ -186,7 +224,7 @@ public class GameLevel {
         
     }
     
-    public Vector2f checkIntersections(Vector2f lineStart, Vector2f lineEnd) {
+    public Vector2f checkIntersections(Vector2f lineStart, Vector2f lineEnd, boolean hurtEnemies) {
         
         Vector2f nearestIntersection = null;
         
@@ -204,6 +242,41 @@ public class GameLevel {
                     new Vector2f(door.getM_transform().getM_translation().getX(), door.getM_transform().getM_translation().getZ()), door.getDoorSize());
             
             nearestIntersection = findNearestVector2f(collisionVector, nearestIntersection, lineStart);
+            
+        }
+        
+        if(hurtEnemies) {
+            
+            Vector2f nearestEnemyIntersect = null;
+            Enemy nearestEnemy = null;
+
+            for(Enemy enemy : m_enemies) {
+
+                Vector2f monsterSize = Enemy.getSIZE();
+                Vector3f monsterPos3f = enemy.getM_transform().getM_translation();
+                Vector2f monsterPos2f = new Vector2f(monsterPos3f.getX(), monsterPos3f.getZ());
+                Vector2f collisionVector = lineIntersectRect(lineStart, lineEnd, monsterPos2f, monsterSize);
+
+                nearestEnemyIntersect = findNearestVector2f(nearestEnemyIntersect, collisionVector, lineStart);
+
+                if(nearestEnemyIntersect == collisionVector) {
+
+                        nearestEnemy = enemy;
+
+                }
+
+            }
+
+            if(nearestEnemyIntersect != null && (nearestIntersection == null ||
+                    nearestEnemyIntersect.subtract(lineStart).length() < nearestIntersection.subtract(lineStart).length())) {
+
+                if(nearestEnemy != null) {
+
+                        nearestEnemy.damage(30);
+
+                }
+                
+            }
             
         }
         
@@ -393,13 +466,45 @@ public class GameLevel {
         
     }
     
-    private void addSpecial(int blueValue, int x, int y) {
+    private void addSpecial(int blueValue, int x, int z) {
+        
+        if(blueValue == 1) {
+            
+            m_player = new Player(new Vector3f(((x + 0.5f) * SPOT_WIDTH), 0.4375f, ((z + 0.5f) * SPOT_DEPTH)));
+            
+        }
         
         if(blueValue == 16) {
             
-            addDoor(x, y);
+            addDoor(x, z);
             
         }
+        
+        if(blueValue == 97) {
+            
+            m_exitPoints.add(new Vector3f(((x + 0.5f) * SPOT_WIDTH), 0, ((z + 0.5f) * SPOT_DEPTH)));
+            
+        }
+        
+        if(blueValue == 128) {
+            
+            Transform enemyTransform = new Transform();
+            enemyTransform.setM_translation(new Vector3f(((x + 0.5f) * SPOT_WIDTH), 0, ((z + 0.5f) * SPOT_DEPTH)));
+            m_enemies.add(new Enemy(enemyTransform));
+            
+        }
+        
+        if(blueValue == 192) {
+            
+            m_medkits.add(new Medkit(new Vector3f(((x + 0.5f) * SPOT_WIDTH), 0, ((z + 0.5f) * SPOT_DEPTH))));
+            
+        }
+        
+    }
+    
+    public void removeMedkit(Medkit medkit) {
+        
+        m_medkitsToRemove.add(medkit);
         
     }
     
@@ -407,13 +512,10 @@ public class GameLevel {
         
         m_doors = new ArrayList<>();
         m_enemies = new ArrayList<>();
+        m_medkits = new ArrayList<>();
         
         collisionPosStart = new ArrayList<>();
         collisionPosEnd = new ArrayList<>();
-        
-        Transform tempTransform = new Transform();
-        tempTransform.setM_translation(new Vector3f(8, 0, 8));
-        m_enemies.add(new Enemy(tempTransform));
         
         ArrayList<Vertex> vertices = new ArrayList<>();
         ArrayList<Integer> indices = new ArrayList<>();

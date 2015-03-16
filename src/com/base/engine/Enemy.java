@@ -26,11 +26,11 @@ import java.util.Random;
  */
 public class Enemy {
     
-    public static final float SCALE = 0.7f;
-    public static final float SIZEY = SCALE;
-    public static final float SIZEX = (float)((double)SIZEY / (1.91034487258620696551724137931 * 2));
-    public static final float SIZEZ = 0.2f;
-    public static final float START = 0;
+    private static final float SCALE = 0.7f;
+    private static final float SIZEY = SCALE;
+    private static final float SIZEX = (float)((double)SIZEY / (1.91034487258620696551724137931 * 2));
+    private static final float SIZEZ = 0.2f;
+    private static final float START = 0;
     private static final Vector2f SIZE = new Vector2f(SIZEX, SIZEZ);
     
     private static final float MOVE_SPEED = 2.8f;
@@ -38,20 +38,20 @@ public class Enemy {
     
     private static final float SHOOT_DISTANCE = 1000;
     
-    public static final float TEX_MIN_X = 0;
-    public static final float TEX_MAX_X = -1;
-    public static final float TEX_MIN_Y = 0;
-    public static final float TEX_MAX_Y = 1;
+    private static final float TEX_MIN_X = 0;
+    private static final float TEX_MAX_X = -1;
+    private static final float TEX_MIN_Y = 0;
+    private static final float TEX_MAX_Y = 1;
     
-    public static final int STATE_IDLE   = 0;
-    public static final int STATE_CHASE  = 1;
-    public static final int STATE_ATTACK = 2;
-    public static final int STATE_DYING  = 3;
-    public static final int STATE_DEAD   = 4;
+    private static final int STATE_IDLE   = 0;
+    private static final int STATE_CHASE  = 1;
+    private static final int STATE_ATTACK = 2;
+    private static final int STATE_DYING  = 3;
+    private static final int STATE_DEAD   = 4;
     
     private static final float SHOT_ANGLE = 10;
     private static final double ATTACK_CHANCE = 0.5d;
-    public static final int MAX_HEALTH = 100;
+    private static final int MAX_HEALTH = 100;
 
     private static Mesh m_mesh;
     private final Material m_material;
@@ -158,14 +158,12 @@ public class Enemy {
                 Vector2f castDirection = new Vector2f(orientation.getX(), orientation.getZ()).rotate((m_random.nextFloat()));
                 Vector2f lineEnd = lineStart.add(castDirection.multiply(SHOOT_DISTANCE));
                 
-                Vector2f collisionVector = Game.getM_level().checkIntersections(lineStart, lineEnd);
+                Vector2f collisionVector = Game.getM_level().checkIntersections(lineStart, lineEnd, false);
                 
-                Vector2f playerIntersectVector = Game.getM_level().lineIntersectRect(lineStart, lineEnd,
-                                                                                     new Vector2f(Transform.getM_camera().getM_pos().getX(), Transform.getM_camera().getM_pos().getZ()),
-                                                                                     Player.getPLAYER_DIMENSIONS());
+                Vector2f playerIntersectVector = new Vector2f(Transform.getM_camera().getM_pos().getX(), Transform.getM_camera().getM_pos().getZ());
                 
-                if(playerIntersectVector != null && (collisionVector == null ||
-                    playerIntersectVector.subtract(lineStart).length() < collisionVector.subtract(lineStart).length())) {
+                if(collisionVector == null ||
+                    playerIntersectVector.subtract(lineStart).length() < collisionVector.subtract(lineStart).length()) {
                     
                     m_state = STATE_CHASE;
                     
@@ -178,7 +176,7 @@ public class Enemy {
         }
         
     }
-    int i = 0;
+    
     private void chaseUpdate(Vector3f orientation, float distance) {
         
         double time = ((double)Time.getTime())/((double)Time.SECOND);
@@ -226,7 +224,7 @@ public class Enemy {
             
             if(movementVector.subtract(orientation).length() != 0) {
                 
-                Game.getM_level().openDoors(newPos);
+                Game.getM_level().openDoors(newPos, false);
                 
             }
                
@@ -258,7 +256,7 @@ public class Enemy {
                 Vector2f castDirection = new Vector2f(orientation.getX(), orientation.getZ()).rotate((m_random.nextFloat() - 0.5f) * SHOT_ANGLE);
                 Vector2f lineEnd = lineStart.add(castDirection.multiply(SHOOT_DISTANCE));
                 
-                Vector2f collisionVector = Game.getM_level().checkIntersections(lineStart, lineEnd);
+                Vector2f collisionVector = Game.getM_level().checkIntersections(lineStart, lineEnd, false);
         
                 Vector2f playerIntersectVector = Game.getM_level().lineIntersectRect(lineStart, lineEnd,
                                                                                      new Vector2f(Transform.getM_camera().getM_pos().getX(), Transform.getM_camera().getM_pos().getZ()),
@@ -266,8 +264,7 @@ public class Enemy {
                 
                 if(playerIntersectVector != null && (collisionVector == null ||
                     playerIntersectVector.subtract(lineStart).length() < collisionVector.subtract(lineStart).length())) {
-            
-                    System.out.println("We've just hit the player");
+                    
                     m_state = STATE_CHASE;
                     m_canAttack = false;
                     Game.getM_level().getM_player().damage(10);
