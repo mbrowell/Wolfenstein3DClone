@@ -78,15 +78,15 @@ public class Medkit {
     private void faceCamera(Vector3f directionToCamera) {
         
         
-        float angleToFaceCamera = (float)Math.toDegrees(Math.atan(directionToCamera.getZ()/directionToCamera.getX()));
+        float angleToFaceCamera = (float)Math.toDegrees(Math.atan(directionToCamera.getM_z()/directionToCamera.getM_x()));
         
-        if(directionToCamera.getX() < 0) {
+        if(directionToCamera.getM_x() < 0) {
             
             angleToFaceCamera += 180;
             
         }
         
-        m_transform.getM_rotation().setY(angleToFaceCamera + 90);
+        m_transform.getM_rotation().setM_y(angleToFaceCamera + 90);
         
     }
     

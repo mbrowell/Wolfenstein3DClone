@@ -20,8 +20,11 @@ package com.base.engine;
  *
  * @author Michael Browell <mbrowell1984@gmail.com>
  */
-public class Quaternion extends Vector3f {
+public class Quaternion {
     
+    private float m_x;
+    private float m_y;
+    private float m_z;
     private float m_w;
 
     /**
@@ -33,8 +36,10 @@ public class Quaternion extends Vector3f {
      */
     public Quaternion(float x, float y, float z, float w) {
             
-        super(x, y, z);
-        this.m_w = w;
+        m_x = x;
+        m_y = y;
+        m_z = z;
+        m_w = w;
                 
     }
 
@@ -42,10 +47,9 @@ public class Quaternion extends Vector3f {
      *
      * @return
      */
-    @Override
     public float length() {
             
-        return (float)Math.sqrt(super.getX() * super.getX() + super.getY() * super.getY() + super.getZ() * super.getZ() + m_w * m_w);
+        return (float)Math.sqrt(m_x * m_x + m_y * m_y + m_z * m_z + m_w * m_w);
                 
     }
 	
@@ -53,12 +57,11 @@ public class Quaternion extends Vector3f {
      *
      * @return
      */
-    @Override
     public Quaternion normalized() {
             
         float length = length();
 		
-        return new Quaternion(super.getX() / length, super.getY() / length, super.getZ() / length, m_w / length);
+        return new Quaternion(m_x / length, m_y / length, m_z / length, m_w / length);
                 
     }
 	
@@ -68,7 +71,7 @@ public class Quaternion extends Vector3f {
      */
     public Quaternion conjugate() {
             
-		return new Quaternion(-super.getX(), -super.getY(), -super.getZ(), m_w);
+		return new Quaternion(-m_x, -m_y, -m_z, m_w);
                 
     }
 
@@ -79,10 +82,10 @@ public class Quaternion extends Vector3f {
      */
     public Quaternion multiply(Quaternion r) {
             
-        float w_ = m_w * r.getW() - super.getX() * r.getX() - super.getY() * r.getY() - super.getZ() * r.getZ();
-        float x_ = super.getX() * r.getW() + m_w * r.getX() + super.getY() * r.getZ() - super.getZ() * r.getY();
-        float y_ = super.getY() * r.getW() + m_w * r.getY() + super.getZ() * r.getX() - super.getX() * r.getZ();
-        float z_ = super.getZ() * r.getW() + m_w * r.getZ() + super.getX() * r.getY() - super.getY() * r.getX();
+        float w_ = m_w * r.getM_w() - m_x * r.getM_x() - m_y * r.getM_y() - m_z * r.getM_z();
+        float x_ = m_x * r.getM_w() + m_w * r.getM_x() + m_y * r.getM_z() - m_z * r.getM_y();
+        float y_ = m_y * r.getM_w() + m_w * r.getM_y() + m_z * r.getM_x() - m_x * r.getM_z();
+        float z_ = m_z * r.getM_w() + m_w * r.getM_z() + m_x * r.getM_y() - m_y * r.getM_x();
 	
         return new Quaternion(x_, y_, z_, w_);
                 
@@ -93,23 +96,58 @@ public class Quaternion extends Vector3f {
      * @param r
      * @return
      */
-    @Override
     public Quaternion multiply(Vector3f r) {
             
-        float w_ = -super.getX() * r.getX() - super.getY() * r.getY() - super.getZ() * r.getZ();
-        float x_ =  m_w * r.getX() + super.getY() * r.getZ() - super.getZ() * r.getY();
-        float y_ =  m_w * r.getY() + super.getZ() * r.getX() - super.getX() * r.getZ();
-        float z_ =  m_w * r.getZ() + super.getX() * r.getY() - super.getY() * r.getX();
+        float w_ = -m_x * r.getM_x() - m_y * r.getM_y() - m_z * r.getM_z();
+        float x_ =  m_w * r.getM_x() + m_y * r.getM_z() - m_z * r.getM_y();
+        float y_ =  m_w * r.getM_y() + m_z * r.getM_x() - m_x * r.getM_z();
+        float z_ =  m_w * r.getM_z() + m_x * r.getM_y() - m_y * r.getM_x();
 		
 	return new Quaternion(x_, y_, z_, w_);
                 
     }
 
+    public float getM_x() {
+        
+        return m_x;
+        
+    }
+
+    public void setM_x(float m_x) {
+        
+        this.m_x = m_x;
+        
+    }
+
+    public float getM_y() {
+        
+        return m_y;
+        
+    }
+
+    public void setM_y(float m_y) {
+        
+        this.m_y = m_y;
+        
+    }
+
+    public float getM_z() {
+        
+        return m_z;
+        
+    }
+
+    public void setM_z(float m_z) {
+        
+        this.m_z = m_z;
+        
+    }
+    
     /**
      *
      * @return
      */
-    public float getW() {
+    public float getM_w() {
             
     	return m_w;
                 
@@ -119,7 +157,7 @@ public class Quaternion extends Vector3f {
      *
      * @param w
      */
-    public void setW(float w) {
+    public void setM_w(float w) {
             
         this.m_w = w;
                 

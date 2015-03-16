@@ -106,10 +106,10 @@ public class Matrix4f {
         
         Vector3f u = f.cross(right);
 
-        m_m[0][0] = right.getX(); m_m[0][1] = right.getY(); m_m[0][2] = right.getZ(); m_m[0][3] = 0;
-        m_m[1][0] = u.getX();     m_m[1][1] = u.getY();     m_m[1][2] = u.getZ();     m_m[1][3] = 0;
-        m_m[2][0] = f.getX();     m_m[2][1] = f.getY();     m_m[2][2] = f.getZ();     m_m[2][3] = 0;
-        m_m[3][0] = 0;            m_m[3][1] = 0;            m_m[3][2] = 0;            m_m[3][3] = 1;
+        m_m[0][0] = right.getM_x(); m_m[0][1] = right.getM_y(); m_m[0][2] = right.getM_z(); m_m[0][3] = 0;
+        m_m[1][0] = u.getM_x();     m_m[1][1] = u.getM_y();     m_m[1][2] = u.getM_z();     m_m[1][3] = 0;
+        m_m[2][0] = f.getM_x();     m_m[2][1] = f.getM_y();     m_m[2][2] = f.getM_z();     m_m[2][3] = 0;
+        m_m[3][0] = 0;              m_m[3][1] = 0;              m_m[3][2] = 0;              m_m[3][3] = 1;
 
         return this;
 

@@ -141,8 +141,8 @@ public class Player {
                 
             } else {
                 
-                Vector2f lineStart = new Vector2f(getM_camera().getM_pos().getX(), getM_camera().getM_pos().getZ());
-                Vector2f castDirection = new Vector2f(getM_camera().getM_forward().getX(), getM_camera().getM_pos().getZ()).normalized();
+                Vector2f lineStart = new Vector2f(getM_camera().getM_pos().getM_x(), getM_camera().getM_pos().getM_z());
+                Vector2f castDirection = new Vector2f(getM_camera().getM_forward().getM_x(), getM_camera().getM_pos().getM_z()).normalized();
                 Vector2f lineEnd = lineStart.add(castDirection.multiply(SHOOT_DISTANCE));
 
                 Game.getM_level().checkIntersections(lineStart, lineEnd, true);
@@ -177,17 +177,17 @@ public class Player {
             
             Vector2f deltaPos = Input.getMousePosition().subtract(CENTRE_POSITION);
             
-            boolean rotY = deltaPos.getX() != 0;
-            boolean rotX = deltaPos.getY() != 0;
+            boolean rotY = deltaPos.getM_x() != 0;
+            boolean rotX = deltaPos.getM_y() != 0;
             
             if(rotY) {
                 
-                m_camera.rotateY(deltaPos.getX() * MOUSE_SENSITIVITY);
+                m_camera.rotateY(deltaPos.getM_x() * MOUSE_SENSITIVITY);
                 
             }
             if(rotX) {
                 
-                m_camera.rotateX(-deltaPos.getY() * MOUSE_SENSITIVITY);
+                m_camera.rotateX(-deltaPos.getM_y() * MOUSE_SENSITIVITY);
                 
             }
             
@@ -205,7 +205,7 @@ public class Player {
         
         float moveAmt = (float)(MOVE_SPEED * Time.getM_delta());
         
-        m_movementVector.setY(0);
+        m_movementVector.setM_y(0);
         if(m_movementVector.length() > 0) {
             
             m_movementVector = m_movementVector.normalized();
@@ -225,19 +225,19 @@ public class Player {
         }
         
         m_gunTransform.setM_translation(m_camera.getM_pos().add(m_camera.getM_forward().normalized().multiply(0.105f)));
-        m_gunTransform.getM_translation().setY(m_gunTransform.getM_translation().getY() + OFFSET);
+        m_gunTransform.getM_translation().setM_y(m_gunTransform.getM_translation().getM_y() + OFFSET);
         
         Vector3f directionToCamera = Transform.getM_camera().getM_pos().subtract(m_gunTransform.getM_translation());
         
-        float angleToFaceCamera = (float)Math.toDegrees(Math.atan(directionToCamera.getZ()/directionToCamera.getX()));
+        float angleToFaceCamera = (float)Math.toDegrees(Math.atan(directionToCamera.getM_z()/directionToCamera.getM_x()));
         
-        if(directionToCamera.getX() < 0) {
+        if(directionToCamera.getM_x() < 0) {
             
             angleToFaceCamera += 180;
             
         }
         
-        m_gunTransform.getM_rotation().setY(angleToFaceCamera + 90);
+        m_gunTransform.getM_rotation().setM_y(angleToFaceCamera + 90);
         
         
     }

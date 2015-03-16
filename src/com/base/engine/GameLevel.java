@@ -184,7 +184,7 @@ public class GameLevel {
                 
                 for(Door door: m_doors) {
                     
-                    Vector2f doorPos = new Vector2f(door.getM_transform().getM_translation().getX(), door.getM_transform().getM_translation().getZ());
+                    Vector2f doorPos = new Vector2f(door.getM_transform().getM_translation().getM_x(), door.getM_transform().getM_translation().getM_z());
                     
                     Vector2f doorSize = door.getDoorSize();
                     collisionVector = collisionVector.multiply(rectCollide(oldPos, newPos, PLAYER_DIMENSIONS, doorPos, doorSize));
@@ -195,7 +195,7 @@ public class GameLevel {
             
         }
         
-        return new Vector3f(collisionVector.getX(), 0, collisionVector.getY());
+        return new Vector3f(collisionVector.getM_x(), 0, collisionVector.getM_y());
         
     }
     
@@ -203,20 +203,20 @@ public class GameLevel {
         
         Vector2f result = new Vector2f(0, 0);
         
-        if(newPos.getX() + playerSize.getX() < objPos.getX() ||
-           newPos.getX() - playerSize.getX() > objPos.getX() + objSize.getX() * objSize.getX() ||
-           oldPos.getZ() + playerSize.getY() < objPos.getY() ||
-           oldPos.getZ() - playerSize.getY() > objPos.getY() + objSize.getY() * objSize.getY()) {
+        if(newPos.getM_x() + playerSize.getM_x() < objPos.getM_x() ||
+           newPos.getM_x() - playerSize.getM_x() > objPos.getM_x() + objSize.getM_x() * objSize.getM_x() ||
+           oldPos.getM_z() + playerSize.getM_y() < objPos.getM_y() ||
+           oldPos.getM_z() - playerSize.getM_y() > objPos.getM_y() + objSize.getM_y() * objSize.getM_y()) {
             
-            result.setX(1);
+            result.setM_x(1);
             
         }
-        if(oldPos.getX() + playerSize.getX() < objPos.getX() ||
-           oldPos.getX() - playerSize.getX() > objPos.getX() + objSize.getX() * objSize.getX() ||
-           newPos.getZ() + playerSize.getY() < objPos.getY() ||
-           newPos.getZ() - playerSize.getY() > objPos.getY() + objSize.getY() * objSize.getY()) {
+        if(oldPos.getM_x() + playerSize.getM_x() < objPos.getM_x() ||
+           oldPos.getM_x() - playerSize.getM_x() > objPos.getM_x() + objSize.getM_x() * objSize.getM_x() ||
+           newPos.getM_z() + playerSize.getM_y() < objPos.getM_y() ||
+           newPos.getM_z() - playerSize.getM_y() > objPos.getM_y() + objSize.getM_y() * objSize.getM_y()) {
             
-            result.setY(1);
+            result.setM_y(1);
             
         }
         
@@ -239,7 +239,7 @@ public class GameLevel {
         for(Door door : m_doors) {
             
             Vector2f collisionVector = lineIntersectRect(lineStart, lineEnd,
-                    new Vector2f(door.getM_transform().getM_translation().getX(), door.getM_transform().getM_translation().getZ()), door.getDoorSize());
+                    new Vector2f(door.getM_transform().getM_translation().getM_x(), door.getM_transform().getM_translation().getM_z()), door.getDoorSize());
             
             nearestIntersection = findNearestVector2f(collisionVector, nearestIntersection, lineStart);
             
@@ -254,7 +254,7 @@ public class GameLevel {
 
                 Vector2f monsterSize = Enemy.getSIZE();
                 Vector3f monsterPos3f = enemy.getM_transform().getM_translation();
-                Vector2f monsterPos2f = new Vector2f(monsterPos3f.getX(), monsterPos3f.getZ());
+                Vector2f monsterPos2f = new Vector2f(monsterPos3f.getM_x(), monsterPos3f.getM_z());
                 Vector2f collisionVector = lineIntersectRect(lineStart, lineEnd, monsterPos2f, monsterSize);
 
                 nearestEnemyIntersect = findNearestVector2f(nearestEnemyIntersect, collisionVector, lineStart);
@@ -338,20 +338,20 @@ public class GameLevel {
         
         Vector2f result = null;
         
-        Vector2f collisionVector = lineIntersect(lineStart, lineEnd, rectPos, new Vector2f(rectPos.getX() + rectSize.getX(),
-                                                                                           rectPos.getY()));
+        Vector2f collisionVector = lineIntersect(lineStart, lineEnd, rectPos, new Vector2f(rectPos.getM_x() + rectSize.getM_x(),
+                                                                                           rectPos.getM_y()));
         result = findNearestVector2f(result, collisionVector, lineStart);
         
-        collisionVector = lineIntersect(lineStart, lineEnd, rectPos, new Vector2f(rectPos.getX(),
-                                                                                  rectPos.getY() + rectSize.getY()));
+        collisionVector = lineIntersect(lineStart, lineEnd, rectPos, new Vector2f(rectPos.getM_x(),
+                                                                                  rectPos.getM_y() + rectSize.getM_y()));
         result = findNearestVector2f(result, collisionVector, lineStart);
         
-        collisionVector = lineIntersect(lineStart, lineEnd, new Vector2f(rectPos.getX() + rectSize.getX(),
-                                                                                  rectPos.getY()), rectPos.add(rectSize));
+        collisionVector = lineIntersect(lineStart, lineEnd, new Vector2f(rectPos.getM_x() + rectSize.getM_x(),
+                                                                                  rectPos.getM_y()), rectPos.add(rectSize));
         result = findNearestVector2f(result, collisionVector, lineStart);
         
-        collisionVector = lineIntersect(lineStart, lineEnd, new Vector2f(rectPos.getX(),
-                                                                         rectPos.getY() + rectSize.getY()), rectPos.add(rectSize));
+        collisionVector = lineIntersect(lineStart, lineEnd, new Vector2f(rectPos.getM_x(),
+                                                                         rectPos.getM_y() + rectSize.getM_y()), rectPos.add(rectSize));
         result = findNearestVector2f(result, collisionVector, lineStart);
         
         return result;

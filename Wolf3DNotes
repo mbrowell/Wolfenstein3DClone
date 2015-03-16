@@ -1,10 +1,29 @@
--Engine generalization
--Better scratchpad support
--Improve texture class (reading, blitting, basic image processing
--Some way to separate game and engine data
--Add higher level rendering conrtructs (shaders, materials, meshs, transforms)
--Add some form of automatic shader selection
+BIG TOPICS:
++Rendering engine!
+-Physics engine!
+
+Other topics:
++Engine generalization
++Better scratchpad support
+-Improve texture class (reading, blitting, basic image processing)
++Some way to separate game and engine data
++Add higher level rendering conrtructs (shaders, materials, meshs, transforms)
++Add some form of automatic shader selection
 -Add some form of primitives (rectangles, spheres, cones, pyramids)
--More flexible transform class
--Non-perspective view (orthogonal view)
--Rendering engine!
++More flexible transform class (default values for projection and camera)
+=Non-perspective view (orthogonal view)-Texture manipulation (translation, rotation, scale)
+-Increased texture control (filtering, formatting)
++More friendly constructors
+-Window should have more properties (centre position, fullscreen, mouse locking?)
+-Better vector math (normalization, +=, commonly used vector constants, Swizziling support)
+-Options class/system
++Game object class
+-Make naming more consistent
+-Make it simpler to set mesh parameters
+-Simpler texture coordinate generation
+-Make all time based on seconds rather than nanoseconds
+-Give vector classes a copy constructor and an interpolation method
+-Transparency support
+-Sprite support
+-Efficient vector comparisons
+-Some method of displaying text.

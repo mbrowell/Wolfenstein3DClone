@@ -53,9 +53,9 @@ public class Transform {
      */
     public Matrix4f getTransformation() {
         
-        Matrix4f translation = new Matrix4f().initTranslation(m_translation.getX(), m_translation.getY(), m_translation.getZ());
-        Matrix4f rotation = new Matrix4f().initRotation(m_rotation.getX(), m_rotation.getY(), m_rotation.getZ());
-        Matrix4f scale = new Matrix4f().initScale(m_scale.getX(), m_scale.getY(), m_scale.getZ());
+        Matrix4f translation = new Matrix4f().initTranslation(m_translation.getM_x(), m_translation.getM_y(), m_translation.getM_z());
+        Matrix4f rotation = new Matrix4f().initRotation(m_rotation.getM_x(), m_rotation.getM_y(), m_rotation.getM_z());
+        Matrix4f scale = new Matrix4f().initScale(m_scale.getM_x(), m_scale.getM_y(), m_scale.getM_z());
         
         return translation.multiply(rotation.multiply(scale));
         
@@ -70,7 +70,7 @@ public class Transform {
         Matrix4f transformationMatrix = getTransformation();
         Matrix4f projectionMatrix = new Matrix4f().initProjection(m_fov, m_width, m_height, m_zNear, m_zFar);
         Matrix4f cameraRotation = new Matrix4f().initCamera(m_camera.getM_forward(), m_camera.getM_up());
-        Matrix4f cameraTranslation = new Matrix4f().initTranslation(-m_camera.getM_pos().getX(), -m_camera.getM_pos().getY(), -m_camera.getM_pos().getZ());
+        Matrix4f cameraTranslation = new Matrix4f().initTranslation(-m_camera.getM_pos().getM_x(), -m_camera.getM_pos().getM_y(), -m_camera.getM_pos().getM_z());
         
         return projectionMatrix.multiply(cameraRotation.multiply(cameraTranslation.multiply(transformationMatrix)));
         

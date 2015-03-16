@@ -154,13 +154,13 @@ public class Enemy {
             
             if(m_canLook) {
                 
-                Vector2f lineStart = new Vector2f (m_transform.getM_translation().getX(), m_transform.getM_translation().getZ());
-                Vector2f castDirection = new Vector2f(orientation.getX(), orientation.getZ()).rotate((m_random.nextFloat()));
+                Vector2f lineStart = new Vector2f (m_transform.getM_translation().getM_x(), m_transform.getM_translation().getM_z());
+                Vector2f castDirection = new Vector2f(orientation.getM_x(), orientation.getM_z()).rotate((m_random.nextFloat()));
                 Vector2f lineEnd = lineStart.add(castDirection.multiply(SHOOT_DISTANCE));
                 
                 Vector2f collisionVector = Game.getM_level().checkIntersections(lineStart, lineEnd, false);
                 
-                Vector2f playerIntersectVector = new Vector2f(Transform.getM_camera().getM_pos().getX(), Transform.getM_camera().getM_pos().getZ());
+                Vector2f playerIntersectVector = new Vector2f(Transform.getM_camera().getM_pos().getM_x(), Transform.getM_camera().getM_pos().getM_z());
                 
                 if(collisionVector == null ||
                     playerIntersectVector.subtract(lineStart).length() < collisionVector.subtract(lineStart).length()) {
@@ -252,14 +252,14 @@ public class Enemy {
             
             if(m_canAttack) {
                 
-                Vector2f lineStart = new Vector2f (m_transform.getM_translation().getX(), m_transform.getM_translation().getZ());
-                Vector2f castDirection = new Vector2f(orientation.getX(), orientation.getZ()).rotate((m_random.nextFloat() - 0.5f) * SHOT_ANGLE);
+                Vector2f lineStart = new Vector2f (m_transform.getM_translation().getM_x(), m_transform.getM_translation().getM_z());
+                Vector2f castDirection = new Vector2f(orientation.getM_x(), orientation.getM_z()).rotate((m_random.nextFloat() - 0.5f) * SHOT_ANGLE);
                 Vector2f lineEnd = lineStart.add(castDirection.multiply(SHOOT_DISTANCE));
                 
                 Vector2f collisionVector = Game.getM_level().checkIntersections(lineStart, lineEnd, false);
         
                 Vector2f playerIntersectVector = Game.getM_level().lineIntersectRect(lineStart, lineEnd,
-                                                                                     new Vector2f(Transform.getM_camera().getM_pos().getX(), Transform.getM_camera().getM_pos().getZ()),
+                                                                                     new Vector2f(Transform.getM_camera().getM_pos().getM_x(), Transform.getM_camera().getM_pos().getM_z()),
                                                                                      Player.getPLAYER_DIMENSIONS());
                 
                 if(playerIntersectVector != null && (collisionVector == null ||
@@ -324,21 +324,21 @@ public class Enemy {
     private void faceCamera(Vector3f directionToCamera) {
         
         
-        float angleToFaceCamera = (float)Math.toDegrees(Math.atan(directionToCamera.getZ()/directionToCamera.getX()));
+        float angleToFaceCamera = (float)Math.toDegrees(Math.atan(directionToCamera.getM_z()/directionToCamera.getM_x()));
         
-        if(directionToCamera.getX() < 0) {
+        if(directionToCamera.getM_x() < 0) {
             
             angleToFaceCamera += 180;
             
         }
         
-        m_transform.getM_rotation().setY(angleToFaceCamera + 90);
+        m_transform.getM_rotation().setM_y(angleToFaceCamera + 90);
         
     }
     
     private void alignWithGround() {
         
-        m_transform.getM_translation().setY(0);
+        m_transform.getM_translation().setM_y(0);
         
     }
     

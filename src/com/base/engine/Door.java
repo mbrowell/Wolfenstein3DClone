@@ -168,7 +168,7 @@ public class Door {
     
     public Vector2f getDoorSize() {
         
-        if(getM_transform().getM_rotation().getY() == 90) {
+        if(getM_transform().getM_rotation().getM_y() == 90) {
             
             return new Vector2f(Door.DEPTH, Door.WIDTH);
             

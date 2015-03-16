@@ -54,7 +54,7 @@ public class Vector2f {
      */
     public float dot(Vector2f r) {
             
-        return m_x * r.getX() + m_y * r.getY();
+        return m_x * r.getM_x() + m_y * r.getM_y();
                 
     }
 	
@@ -77,7 +77,7 @@ public class Vector2f {
      */
     public float cross(Vector2f r) {
             
-        return m_x * r.getY() - m_y * r.getX();
+        return m_x * r.getM_y() - m_y * r.getM_x();
                 
     }
 
@@ -113,7 +113,7 @@ public class Vector2f {
      */
     public Vector2f add(Vector2f r) {
             
-        return new Vector2f(m_x + r.getX(), m_y + r.getY());
+        return new Vector2f(m_x + r.getM_x(), m_y + r.getM_y());
                 
     }
 	
@@ -135,7 +135,7 @@ public class Vector2f {
      */
     public Vector2f subtract(Vector2f r) {
             
-        return new Vector2f(m_x - r.getX(), m_y - r.getY());
+        return new Vector2f(m_x - r.getM_x(), m_y - r.getM_y());
                 
     }
 	
@@ -157,7 +157,7 @@ public class Vector2f {
      */
     public Vector2f multiply(Vector2f r) {
             
-        return new Vector2f(m_x * r.getX(), m_y * r.getY());
+        return new Vector2f(m_x * r.getM_x(), m_y * r.getM_y());
                 
     }
 	
@@ -179,7 +179,7 @@ public class Vector2f {
      */
     public Vector2f divide(Vector2f r) {
             
-        return new Vector2f(m_x / r.getX(), m_y / r.getY());
+        return new Vector2f(m_x / r.getM_x(), m_y / r.getM_y());
                 
     }
 	
@@ -209,7 +209,7 @@ public class Vector2f {
      *
      * @return
      */
-    public float getX() {
+    public float getM_x() {
             
         return m_x;
                 
@@ -219,7 +219,7 @@ public class Vector2f {
      *
      * @param x
      */
-    public void setX(float x) {
+    public void setM_x(float x) {
             
         this.m_x = x;
                 
@@ -229,7 +229,7 @@ public class Vector2f {
      *
      * @return
      */
-    public float getY() {
+    public float getM_y() {
             
         return m_y;
                 
@@ -239,7 +239,7 @@ public class Vector2f {
      *
      * @param y
      */
-    public void setY(float y) {
+    public void setM_y(float y) {
             
         this.m_y = y;
                 
@@ -252,7 +252,7 @@ public class Vector2f {
      */
     public boolean equals(Vector2f r) {
             
-        return m_x == r.getX() && m_y == r.getY();
+        return m_x == r.getM_x() && m_y == r.getM_y();
                 
     }
     

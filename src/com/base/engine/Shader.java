@@ -305,7 +305,7 @@ public class Shader {
      */
     public void setUniform(String uniformName, Vector3f value) {
         
-        glUniform3f(m_uniforms.get(uniformName), value.getX(), value.getY(), value.getZ());
+        glUniform3f(m_uniforms.get(uniformName), value.getM_x(), value.getM_y(), value.getM_z());
         
     }
     
